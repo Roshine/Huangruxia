@@ -1,0 +1,63 @@
+.bg_primary {
+	background-color: #0894EC;
+}
+.bg_success {
+	background-color: #4CD964;
+}
+.card-content-inner {
+	color: #fff;
+}
+/* 首页卡片颜色 */
+.color_white {
+	color: white;
+}
+/* 设置页面跳转的样式 */
+div .load_page {
+	display: block;
+}
+/* 重写card-footer样式 */
+.card-footer {
+	color: #fff;
+	height: 20px;
+}
+.card-footer p {
+	display: block;
+	float: right;
+	margin-left: 82%;
+}
+
+/* 侧边栏样式 */
+.panel_width {
+	width: 40%;
+}
+.panel_width p {
+	font-size: 12px;
+}
+
+/* 每周总结颜色 */
+.bg_summary {
+	background-color: #12EE8E;
+}
+.bg_summary div {
+	color: #fff;
+}
+.bg_experience {
+	background-color: #125FEE;
+}
+.bg_experience div {
+	color: #fff;
+}
+
+/* pre_template.html页面样式 */
+ul {
+	margin-left: -25px;
+	margin-right: 10px;
+}
+ul li {
+	list-style: none;
+}
+ul li p {
+	text-align: center;
+	font-family: 'Microsoft Yahei';
+	font-size: 16px;
+}

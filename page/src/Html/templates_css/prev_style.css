@@ -1,0 +1,11 @@
+ul li h4 {
+	margin: 0px;
+}
+ul li .topic_options {
+	margin-left: 5px;
+}
+/* 提交 */
+.submit {
+	width: 50%;
+	margin-left: 25%;
+}

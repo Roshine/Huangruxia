@@ -1,0 +1,140 @@
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div class="register-box">
+            <div class="register-logo">
+                <a href="#"><b>计算机科学与技术导论</b></a>
+            </div>
+
+            <div class="register-box-body" style="font-size:12px;">
+                <p class="login-box-msg">Register a new membership</p>
+
+                <form id="signinForm" action="./register" method="post">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="stuId" class="form-control" placeholder="学号">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" class="form-control" placeholder="姓名">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="email" class="form-control" placeholder="邮箱">
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" name="password" class="form-control" placeholder="密码">
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" name="confirmPassword" class="form-control" placeholder="确认密码">
+                        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+                    </div>
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-xs-8">
+                            <label for="agree" style="margin-top:20px;">
+                                <input id="agree" type="checkbox" name="agree">
+                                I agree to the <a href="#">terms</a>
+                            </label>
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat ">Sign in</button>
+                        </div>
+                    </div>
+
+                    <a href="#/login"> I already have a membership </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        navbarActiveChange('register');
+
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-red',
+            increaseArea: '20%' // optional
+        });
+
+        $('#agree').on('ifChanged',function(event){
+            if($('#agree').is(':checked'))
+                $('button[type="submit"]').removeClass('disabled');
+            else
+                $('button[type="submit"]').addClass('disabled');
+        });
+
+
+        $('#signinForm').bootstrapValidator({
+            message: 'This value is not valid',
+            //live:'disabled',
+            feedbackIcons: {
+                valid: null,
+                invalid: null,
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                name: {
+                    message: 'The username is not valid',
+                    validators: {
+                        notEmpty: {}
+                    }
+                },
+                email: {
+                    message : 'The email is not valid',
+                    validators:{
+                        notEmpty: {},
+                        emailAddress:{
+                            message: 'The email is not valid'
+                        }
+                    }
+                },
+                password: {
+                    validators: {
+                        notEmpty: {}
+                    }
+                },
+                confirmPassword:{
+                    validators:{
+                        identical: {
+                            field: 'password',
+                            message: 'The password and its confirm are not the same'
+                        }
+                    }
+                }
+            }
+        }).on('success.form.bv', function(e) {
+            // Prevent form submission
+            e.preventDefault();
+
+            if($('button[type="submit"]').hasClass('disabled'))
+                return;
+
+            var $form = $(e.target);
+
+            var bv = $form.data('bootstrapValidator');
+
+            $.post($form.attr('action'), $form.serialize(), function(response,status) {
+                if(response.error == 0){
+                    window.location.href = "../online";
+                }else{
+                    if(response.message)
+                        alert(response.message);
+                    else
+                        alert('The password is not correct!');
+                    bv.disableSubmitButtons(false);
+                }
+            }).fail(function(){
+                alert('Connect Server fail!');
+                bv.disableSubmitButtons(false);
+            });
+        }).on('init.form.bv',function(){
+            console.log('init');
+        });
+
+        //$('#signinForm').data('bootstrapValidator').disableSubmitButtons(false);
+
+    })
+</script>

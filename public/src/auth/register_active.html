@@ -1,0 +1,30 @@
+<style>
+    .register-box{
+        width:500px;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div class="register-box">
+            <div class="register-logo">
+                <a href="#"><b>计算机科学与技术导论</b></a>
+            </div>
+
+            <div class="register-box-body" style="min-height: 400px;">
+                <h3 style="color:black;"><b>Dear {{$name}}:</b></h3>
+
+                <div style="margin:20px 0 100px 30px;">
+                    <h3 style="">{{ $title }}</h3>
+                    <h4 >{{ $message }}</h4>
+                    @if($title == 'Active Success!')
+                    <h4>You can click here to login page</h4>
+                    <a style="width:150px;" class="btn btn-primary btn-block btn-flat" href="#/login">Go to Login</a>
+                    @endif
+                </div>
+                <div style="border: 1px solid #08b7fe;"></div>
+                <h5 style="text-align: right;color:#288dfe;">Analyse Genes VIP Center</h5>
+            </div>
+        </div>
+    </div>
+</div>

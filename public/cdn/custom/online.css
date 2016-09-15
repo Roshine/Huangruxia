@@ -1,0 +1,44 @@
+.navheight{ height: 60px;}
+.navbar-nav li a{ line-height: 40px; font-size: 20px; font-weight: 500;}
+.footer{ text-align: center;}
+
+/*pre_class*/
+#pre_learning{ min-height: 200px; margin-left: 40px; width: 600px;}
+.difficulty , .submit{ margin-left: 40px; margin-top: 10px;}
+#list .title{ margin-left: 20px;}
+#list li{ cursor: pointer;}
+#pre_details{ margin-left: 40px;}
+#pre_feedback{ margin-top: 20px;}
+.pre_feedback{width: 500px; height: 100px; resize:none;}
+/*学生课前预习填写*/
+#pre_fillin{ margin:0 20px;}
+#pre_fillin .box{margin-bottom: 0px; border-top: 1px solid #d2d6de;}
+#pre_fillin .option_desc{margin-left: 20px;}
+.options input{ margin-left: 15px;}
+
+/*class_discuss*/
+#show_discuss{ min-height:380px; width: 500px; border: 1px solid #ccc; padding: 10px; margin-left: 40px; background-color: #fff; }
+#show_discuss li{ list-style: none; line-height: 24px;}
+#speak{ width: 500px; margin-left: 40px;}
+#my_view{ width: 500px;}
+
+
+/*unit_test*/
+.h3_font{ margin-left: 40px;}
+#questions{ margin-left: 40px; font-size: 14px; line-height: 20px; background-color: #fff; border: 1px solid #ccc;  padding: 10px;}
+/*#feedback{ min-height: 100px; margin-left: 40px; width: 600px;}*/
+.difficulty , .submit{ margin:10px 0 20px 40px;}
+.ques_description{ padding-bottom: 10px; border-bottom: 1px solid #ccc; padding-top: 10px;}
+.last_question{ border: none;}
+/*exp_test 同unit_test*/
+
+/*learning_style*/
+#learning_style{ padding-bottom: 20px; background-color: #fff; width: 100%; text-align: center; padding-top: 15px;}
+
+
+/*禁止拖大textarea*/
+#pre_learning , #my_view , #feedback{resize:none;}
+
+/*****teacher preclass********/
+.member{ text-align: right; line-height: 35px; font-size: 20px;}
+.assessment{ line-height: 35px; font-size: 20px;}

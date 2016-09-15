@@ -1,0 +1,100 @@
+<div class="register-box">
+    <div class="register-logo">
+        <a href="#"><b>计算机科学与技术导论</b></a>
+    </div>
+
+    <div class="register-box-body" style="font-size:12px;">
+        <p class="login-box-msg">Sign in to the computingdream</p>
+
+        <form id="signinForm" action="./login" method="post">
+            <div class="form-group has-feedback">
+                <input type="text" name="stuid" class="form-control" placeholder="学号">
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" name="password" class="form-control" placeholder="密码">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+
+            <div class="row" style="margin-bottom: 20px;">
+                <div class="col-xs-8">
+
+                    <label for="remember" style="margin-top:20px;">
+                        <input type="checkbox" name="remember" id="remember">
+                        记住密码
+                    </label>
+
+                </div>
+                <div class="col-xs-4">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">登录 </button>
+                </div>
+            </div>
+
+            <a href="#/forget-password">I forgot my password</a>
+            <br>
+            <a href="#/register">注册新账号</a>
+        </form>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        navbarActiveChange('login');
+
+
+
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square-red',
+            increaseArea: '20%' // optional
+        });
+
+        $('#signinForm').bootstrapValidator({
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: null,
+                invalid: null,
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                stuid: {
+                    message: 'The username is not valid',
+                    validators: {
+                        notEmpty: {}
+                    }
+                },
+                password: {
+                    validators: {
+                        notEmpty: {}
+                    }
+                }
+            }
+        }).on('success.form.bv', function(e) {
+            // Prevent form submission
+            e.preventDefault();
+
+            var $form = $(e.target);
+
+            var bv = $form.data('bootstrapValidator');
+
+            $.post($form.attr('action'), $form.serialize(), function(response) {
+                if(response.error == 0 && response.privilege==2){
+                    window.location.href = "../teacher";
+                }else if(response.error == 0 && response.privilege==0){
+                    window.location.href = "../online";
+                }else{
+                    if(response.message)
+                        alert(response.message);
+                    else
+                        alert('The password is not correct!');
+                    bv.disableSubmitButtons(false);
+                }
+            }).fail(function(){
+                alert('Connect Server fail!');
+                bv.disableSubmitButtons(false);
+            });
+        });
+    })
+</script>
