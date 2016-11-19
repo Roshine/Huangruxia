@@ -1,1 +1,218 @@
-<div>录入成绩</div>
+<div id="comput_chap_score">
+	<div><h1>计算章节成绩<h3>(统计过程中请耐心等待)</h3></h1></div>
+	<div style="line-heigth:55px; margin-left:20px; font-size:22px; margin-bottom:23px;">		
+		<button type="button" class="btn btn-primary" id="week1">计算第一章成绩</button>
+		<button type="button" class="btn btn-success" id="week2">计算第二章成绩</button>
+		<button type="button" class="btn btn-info" id="week3">计算第三章成绩</button>
+		<button type="button" class="btn btn-warning" id="week4">计算第四章成绩</button>
+		<button type="button" class="btn btn-primary" id="week5">计算第五章成绩</button>
+		<button type="button" class="btn btn-success" id="week6">计算第六章成绩</button>
+		<button type="button" class="btn btn-info" id="week7">计算第七章成绩</button>
+	</div>
+	<div class="fill_exp_grades" style="margin-left:20px; font-size:22px;">
+		<ul class="nav nav-tabs">
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				实验一 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="exp1-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="exp1-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="exp1-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="exp1-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="exp1-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="exp1-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				实验二 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="exp2-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="exp2-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="exp2-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="exp2-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="exp2-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="exp2-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				实验三 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="exp3-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="exp3-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="exp3-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="exp3-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="exp3-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="exp3-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				实验四 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="exp4-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="exp4-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="exp4-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="exp4-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="exp4-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="exp4-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				实验五 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="exp5-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="exp5-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="exp5-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="exp5-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="exp5-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="exp5-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				测试一 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="test1-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="test1-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="test1-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="test1-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="test1-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="test1-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				测试二 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="test2-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="test2-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="test2-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="test2-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="test2-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="test2-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				测试三 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="test3-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="test3-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="test3-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="test3-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="test3-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="test3-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第一章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap1-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap1-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap1-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap1-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap1-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap1-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第二章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap2-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap2-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap2-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap2-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap2-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap2-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第三章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap3-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap3-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap3-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap3-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap3-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap3-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第四章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap4-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap4-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap4-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap4-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap4-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap4-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第五章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap5-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap5-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap5-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap5-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap5-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap5-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第六章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap6-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap6-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap6-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap6-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap6-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap6-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+				第七章 <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li class="chap7-1"><a href="javascript:void(0);" >一班</a></li>
+					<li class="chap7-2"><a href="javascript:void(0);" >二班</a></li>
+					<li class="chap7-3"><a href="javascript:void(0);" >三班</a></li>
+					<li class="chap7-4"><a href="javascript:void(0);" >四班</a></li>
+					<li class="chap7-5"><a href="javascript:void(0);" >五班</a></li>
+					<li class="chap7-6"><a href="javascript:void(0);">重修及补休</a></li>
+				</ul>
+			</li>
+			</ul>
+	</div>
+	<div><input type="botton" class="btn" id="showExp"><input type="botton" class="btn" id="showClass"></div>
+	<div id="stu_list"></div>
+	<div style="margin-top:20px;">
+		<input class="btn btn-success" type="button" value="提交实验报告成绩" id="submit">
+	</div>
+<script src="assets/teacher/comput_chp_score.js"></script>
+<script src="assets/teacher/fillin_exp_score.js"></script>
+</div>

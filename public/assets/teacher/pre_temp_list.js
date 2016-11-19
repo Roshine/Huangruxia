@@ -84,14 +84,17 @@ $(document).ready(function(){
 		showRefresh: true,                  //是否显示刷新按钮
 		 minimumCountColumns: 2,             //最少允许的列数
 		 clickToSelect: true,                //是否启用点击选中行
-		 height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+		 // height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 		uniqueId: "id",                     //每一行的唯一标识，一般为主键列
 	    columns: [{
 	        field: 'id',
 	        title: '模板编号'
 	    }, {
+			field: 'week',
+			title: '周数'
+		},{
 	        field: 'title',
-	        title: '课时'
+	        title: '标题'
 	    }, {
 	        field: 'published',
 	        title: '操作',
@@ -119,7 +122,7 @@ $(document).ready(function(){
 		}else{
 			return ['<input class="btn btn-info viewtemp" type="button" value="查看模板">',
 					'&nbsp;&nbsp;&nbsp;&nbsp;',
-					'<input class="btn btn-info view" type="button" value="查看问卷">',
+					'<input class="btn btn-info view" type="button" value="查看答卷">',
 					'&nbsp;&nbsp;&nbsp;&nbsp;',
 					'<input class="btn btn-danger delete" type="button" value="删除">'
 					].join('');

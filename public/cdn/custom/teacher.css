@@ -25,3 +25,7 @@
 
 /*learning_style*/
 #learning_style{ padding-bottom: 20px;}
+
+#comput_chap_score button{ font-size: 16px; font-weight: 500; line-height: 36px;}
+
+.scorebtn{ width: 60px; margin-left: 5px;}

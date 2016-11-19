@@ -14,7 +14,6 @@ $(document).ready(function(){
 		data: {"homeworkTempId":senddata},
 		success: function(data){
 			var stulist=data.data;
-			console.log(stulist);
 			if(data.error==-2){
 				alert("没有学生填写该模板");
 			}else{
@@ -33,50 +32,65 @@ $(document).ready(function(){
             	showRefresh: true,                  //是否显示刷新按钮
            		 minimumCountColumns: 2,             //最少允许的列数
            		 clickToSelect: true,                //是否启用点击选中行
-            	height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            	// height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
            		 uniqueId: "collectionid",                     //每一行的唯一标识，一般为主键列
-	            columns: [{
-	                field: 'stuclass',
-	                title: '班级',
-	                class: 'col-md-1'
-	            }, {
+	            columns: [
+	            // 	{
+	            //     field: 'stuclass',
+	            //     title: '班级',
+	            //     class: 'col-md-1'
+	            // },
+					{
 	                field: 'stuname',
 	                title: '姓名',
 	                class: 'col-md-1'
 	            }, {
 	                field: 'stuId',
 	                title: '学号',
-	                class: 'col-md-2'
+	                class: 'col-md-1'
 	            }, {
 	                field: 'score',
 	                title: '选择题得分',
 	                class: 'col-md-1'
 	            }, {
 	                field: 'feedback',
-	                title: '预习心得',
-	                class: 'col-md-5'
+	                title: '课后心得',
+	                class: 'col-md-4'
 	            }, {
 	                field: 'expscore',
 	                title: '操作',
 	                formatter:markFormatter,
 	                events:actionEvents
-	            }]
+	            },{
+	                field: 'remarks',
+                    title: '备注',
+                    class: 'col-md-1'
+	            },{
+				    field: 'submitTime',
+					title: '提交时间',
+					class: 'col-md-1'
+				}]
         	});
 			function markFormatter(value, row, index){
 				if(value==null){
 					return ['<input class="btn btn-info view" type="button" value="查看">',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
-							'<input class="expscore"',
+							'<input class="expscore" placeholder="0-9分"',
 							'id="',
-							row.stuId,
-							'"  style="width:30px;" type="text" >',
+							row.stuId+'expscore',
+							'"  style="width:50px;" type="text" >',
+                            '&nbsp;&nbsp;&nbsp;&nbsp;',
+                            '<input class="remarks" placeholder="备注"',
+                            'id="',
+                            row.stuId+'remarks',
+                            '"  style="width:200px;" type="text" >',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
 							'<input class="btn btn-success grading" type="button" value="评分">'
 							].join('');
 				}else{
 					return ['<input class="btn btn-info view" type="button" value="查看">',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
-							'<span>得分：</span><input class="show_expscore" type="button" value="',
+							'<span>习得得分：</span><input class="show_expscore" type="button" value="',
 							value,
 							'">'
 							].join('');
@@ -88,21 +102,44 @@ $(document).ready(function(){
 	window.actionEvents = {
 			    'click .view': function (e, value, row, index) {
 			    	var collectionid=row.collectionid;
-			        window.location.href="#/hom_stu_detail?collectionId="+collectionid+"&mark=yes";
+			        window.open("#/hom_stu_detail?collectionId="+collectionid+"&mark=yes");
+			        //window.location.href="#/hom_stu_detail?collectionId="+collectionid+"&mark=yes";
 			    },
 			    'click .grading': function (e, value, row, index) {
 			       var collectionid=row.collectionid;
 			       var gradingid=row.stuId;
-			       var expscore = $("#"+gradingid).val();
-			       $.ajax({
-			       	url:'fillHomeworkExpMark',
-			       	type:'POST',
-			       	data: {"homeworkCollectionId":collectionid,"expscore":expscore},
-			       	success: function(){
-			       		$("#preStuListtable").bootstrapTable('updateCell', {"index":index,"field":"expscore","value":expscore});
-			       		alert('评分成功！');
-			       	}
-			       })
+			       var expscore = $("#"+gradingid+'expscore').val();
+                    var remarks = $("#"+gradingid+'remarks').val();
+					if (expscore == ''){
+						alert('还没有填分数')
+					}else if(expscore<=9 && expscore>=0) {
+						$.ajax({
+							url: 'fillHomeworkExpMark',
+							type: 'POST',
+							data: {"homeworkCollectionId": collectionid, "expscore": expscore,"remarks":remarks},
+							success: function (data) {
+								if (data.error == 0) {
+									$("#preStuListtable").bootstrapTable('updateCell', {
+										"index": index,
+										"field": "expscore",
+										"value": expscore
+									});
+									$("#preStuListtable").bootstrapTable('updateCell', {
+										"index": index,
+										"field": "remarks",
+										"value": remarks
+									});
+								}else {
+									alert(data.des);
+								}
+							},
+							error:function () {
+								alert('网络错误！')
+							}
+						})
+					}else {
+						alert("分数为0——9");
+					}
 			    }
 	};
 })

@@ -26,11 +26,11 @@ $(document).ready(function(){
                     showRefresh: true,                  //是否显示刷新按钮
                     minimumCountColumns: 2,             //最少允许的列数
                     clickToSelect: true,                //是否启用点击选中行
-                    height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                    // height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
                     uniqueId: "id",                     //每一行的唯一标识，一般为主键列
                     columns: [{
                         field: 'weekId',
-                        title: '周总结'
+                        title: '周数'
                     },
                     {
                         field: 'startTime',
@@ -60,11 +60,11 @@ $(document).ready(function(){
                     showRefresh: true,                  //是否显示刷新按钮
                     minimumCountColumns: 2,             //最少允许的列数
                     clickToSelect: true,                //是否启用点击选中行
-                    height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                    // height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
                     uniqueId: "id",                     //每一行的唯一标识，一般为主键列
                     columns: [{
                         field: 'weekId',
-                        title: '周总结'
+                        title: '周数'
                     },
                     {
                         field: 'startTime',

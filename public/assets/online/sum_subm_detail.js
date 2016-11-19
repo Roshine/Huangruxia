@@ -11,6 +11,7 @@ $(document).ready(function(){
 		success: function(data){
 			$("#week_sum").val(data.summary);
 			$("#sumScore").text(data.sumScore);
+			$("#remarks").text(data.remarks);
 			var self_a=data.selfAssessment;
 			$('#selfAssessment  option[value="'+self_a+'"] ').attr("selected",true)
 		}

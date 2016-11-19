@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	window.history.forward(1);
 	var url= window.location.href;
 	var parames=url.split("?")[1];
 	parames=parames.split("&");
@@ -9,11 +10,13 @@ $(document).ready(function(){
 		if (!summary) {
 			alert('请填写本周总结');
 		};
-		let option=$("#selfAssessment option:selected");
+		var option=$("#selfAssessment option:selected");
 		var selfAssessment=option.val();
 		if(selfAssessment == 0){
 			alert("请选择本周的自我评价！");
-		}else{
+		}else if(confirm('确认提交否？提交后不可更改了哦！'))
+		{
+            $('#submit').attr("disabled","disabled");
 			var senddata={
 				"weekId":weekId,
 				"summary":summary,
@@ -33,6 +36,7 @@ $(document).ready(function(){
 
 				}
 			})
+
 		}
 	})
 })

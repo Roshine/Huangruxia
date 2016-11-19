@@ -27,6 +27,13 @@ class GroupController extends Controller
         $leaderId = Group::where('groupId',$groupId)
             ->select('leaderId')
             ->first();
+
+        if (!is_object($leaderId)){
+            return[
+                'error' => -2,
+                'des' => '获取组员信息出错'
+            ];
+        }
         if (Auth::user()->stuId == $leaderId->leaderId){
             $leader = true;
         }else{

@@ -19,6 +19,8 @@ $(document).ready(function(){
 			var title=data.title;
 			var startTime=data.startTime;
 			var deadline=data.deadLine;
+			var startTime2=data.startTime2;
+			var deadline2=data.deadLine2;
 			var tempid=data.tempid;
 			var Qdesc=data.Qdesc;
 			$(".Qdesc").each(function(index,el){
@@ -35,6 +37,8 @@ $(document).ready(function(){
 			$("#title").val(title);
 			$("#startTime").val(startTime);
 			$("#deadline").val(deadline);
+			$("#startTime2").val(startTime2);
+			$("#deadline2").val(deadline2);
 			$(".answer").each(function(index,el){
 				var letter=answer[index];
 				switch(letter){
@@ -96,6 +100,8 @@ $(document).ready(function(){
 				var Qdescinfo=[];
 				var startTime=$("#startTime").val();
 				var deadline=$("#deadline").val();
+				var startTime2=$("#startTime2").val();
+				var deadline2=$("#deadline2").val();
 				var target=$("#target").val();
 				var title=$("#title").val();
 				$(".Qdesc").each(function(index,el){
@@ -115,6 +121,8 @@ $(document).ready(function(){
 					"target": target,
 					"startTime":startTime,
 					"deadLine": deadline,
+					"startTime2":startTime2,
+					"deadLine2": deadline2,
 					"Qdesc": Qdescinfo,
 					"answer":answer,
 					"expTempId":pretempid

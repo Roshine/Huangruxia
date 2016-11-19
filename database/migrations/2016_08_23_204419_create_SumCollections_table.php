@@ -20,7 +20,7 @@ class CreateSumCollectionsTable extends Migration
             $table->string('stuName');
             $table->text('summary');
             $table->string('marked')->default('no');
-            $table->integer('score')->nullable();
+            $table->integer('sumScore')->nullable();
             $table->timestamps();
         });
     }
@@ -33,5 +33,6 @@ class CreateSumCollectionsTable extends Migration
     public function down()
     {
         //
+        Schema::drop('SumCollections');
     }
 }

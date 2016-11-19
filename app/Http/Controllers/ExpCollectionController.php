@@ -27,8 +27,12 @@ class ExpCollectionController extends Controller
             ];
         }
 
-        $deadline = ExpTemplate::where('id',$request->expTempId)->select('deadLine')->first();
-        if (time()>=strtotime($deadline)+90000) {
+        if (Auth::user()->class <= 3 ) {
+            $deadline = ExpTemplate::where('id', $request->expTempId)->select('deadLine')->first()->deadLine;
+        }else{
+            $deadline = ExpTemplate::where('id', $request->expTempId)->select('deadLine2')->first()->deadLine2;
+        }
+        if (time()<=strtotime($deadline)+90000) {
             $stuId = Auth::user()->stuId;
             $expTempId = $request->expTempId;
             $result = $request->result;
@@ -50,7 +54,7 @@ class ExpCollectionController extends Controller
         }else{
             return [
                 'error' => '-3',
-                'desc' => '已过答题截止时间，不可提交'
+                'desc' => '已过答题截止时间，提交失败'
             ];
         }
     }
@@ -84,7 +88,7 @@ class ExpCollectionController extends Controller
         $ExpCollections = DB::table('expcollections')
             ->join('students','students.stuId','=','expcollections.stuId')
             ->where('expTempId',$request->expTempId)
-            ->select('expcollections.id','expcollections.stuId','marked', 'resScore','experience','expScore','difficulty','name','class')
+            ->select('expcollections.id','expcollections.stuId','marked','remarks', 'resScore','experience','expScore','difficulty','name','class','expcollections.created_at')
             ->get();
 
         if(!count($ExpCollections)){
@@ -102,10 +106,12 @@ class ExpCollectionController extends Controller
                 'stuclass' => $ExpCollection->class,
                 'stuname' => $ExpCollection->name,
                 'marked' => $ExpCollection->marked,
+                'remarks' => $ExpCollection->remarks,
                 'score' => $ExpCollection->resScore,
                 'feedback' => $ExpCollection->experience,
                 'expscore' => $ExpCollection->expScore,
-                'difficulty' => json_decode($ExpCollection->difficulty)
+                'difficulty' => json_decode($ExpCollection->difficulty),
+                'submitTime' => $ExpCollection->created_at
             ];
         }
 
@@ -189,7 +195,8 @@ class ExpCollectionController extends Controller
 
         $expcollectionid = $request->expcollectionid;
         $expscore = $request->expscore;
-        $res = ExpCollection::where('id',$expcollectionid)->update(['expScore' => $expscore,'marked' => 'yes']);
+        $remarks = $request->remarks;
+        $res = ExpCollection::where('id',$expcollectionid)->update(['expScore' => $expscore,'remarks' => $remarks,'marked' => 'yes']);
 
         return [
             'error' => (!$res ? -2 : 0)
@@ -199,7 +206,8 @@ class ExpCollectionController extends Controller
     //添加实验报告分数时，返回学生列表
     public function getStuListForReportScore(Request $request){
         $validator = Validator::make($request->all(),[
-            'expTempId' => 'required'
+            'expTempId' => 'required',
+            'class' => 'required'
         ]);
 
         if ($validator->fails()){
@@ -210,20 +218,35 @@ class ExpCollectionController extends Controller
         }
 
         $expTempId = $request->expTempId;
+        $class = $request->class;
 
-        $lists = DB::table('students')
-            ->leftJoin('expcollections',function ($join) use($expTempId){
-                $join->on('expcollections.stuId','=','students.stuId')
-                    ->where('expcollections.expTempId','=',$expTempId);
-            })
-            ->select('students.stuId','students.name','students.class','expReportScore','addReportScore')
-            ->get();
+        if (0<$class&&$class<6){
+            $lists = DB::table('students')
+                ->where('class', $request->class)
+                ->leftJoin('expcollections', function ($join) use ($expTempId) {
+                    $join->on('expcollections.stuId', '=', 'students.stuId')
+                        ->where('expcollections.expTempId', '=', $expTempId);
+                })
+                ->select('students.stuId', 'students.name', 'expReportScore', 'addReportScore')
+                ->orderBy('stuId','asc')
+                ->get();
+        }else{
+            $lists = DB::table('students')
+                ->whereNotIn('class', [1,2,3,4,5])
+                ->leftJoin('expcollections', function ($join) use ($expTempId) {
+                    $join->on('expcollections.stuId', '=', 'students.stuId')
+                        ->where('expcollections.expTempId', '=', $expTempId);
+                })
+                ->select('students.stuId', 'students.name', 'expReportScore', 'addReportScore')
+                ->orderBy('stuId','asc')
+                ->get();
+        }
 
         $data = [];
 
         if (count($lists)) {
             foreach ($lists as $list){
-                if (!$list->addReportScore){
+                if (!$list->addReportScore || $list->addReportScore == 'no'){
                     $addReportScore = false;
                 }else{
                     $addReportScore = true;
@@ -232,7 +255,6 @@ class ExpCollectionController extends Controller
                 $data[] = [
                     'stuId' => $list->stuId,
                     'name' => $list->name,
-                    'class' => $list->class,
                     'filled' => $addReportScore,
                     'expReportScore' => $list->expReportScore
                 ];
@@ -245,23 +267,21 @@ class ExpCollectionController extends Controller
         }
     }
 
-    //添加某个学生的实验报告分数
+    //添加学生的实验报告分数
     public function addReportScore(Request $request){
-        $validator = Validator::make($request->all(),[
-            'stuId' => 'required',
-            'expTempId' => 'required',
-            'expReportScore' => 'required'
-        ]);
 
-        if ($validator->fails()){
+//        dd($request->data);
+        $data = $request->data;
+        if (!count($data)){
             return[
-                'error' => -1
+                'error' => -1,
+                'des' => '提交的数据为空'
             ];
         }
 
         //取得对应实验模板的截止时间
         $deadline = DB::table('exptemplates')
-            ->where('id',$request->expTempId)
+            ->where('id',$data[0]["expTempId"])
             ->select('deadLine')
             ->get();
 
@@ -273,50 +293,64 @@ class ExpCollectionController extends Controller
             ];
         }
 
-        //查询数据库是否有对应记录，若有，则添加分数，若没有，则创建新记录
-        $expCollection = DB::table('expcollections')
-            ->where('stuId',$request->stuId)
-            ->where('expTempId',$request->expTempId)
-            ->first();
+        foreach ($data as $item) {
+            //查询数据库是否有对应记录，若有，则添加分数，若没有，则创建新记录
+            $expCollection = DB::table('expcollections')
+                ->where('stuId', $item["stuId"])
+                ->where('expTempId', $item["expTempId"])
+                ->first();
 
-        if (count($expCollection)){                 //有记录，添加分数
-            if ($expCollection->addReportScore == 'yes'){       //已有分数，不用更新
-                $res = true;
-            }else {
-                $res = DB::table('expcollections')
-                    ->where('stuId', $request->stuId)
-                    ->where('expTempId', $request->expTempId)
-                    ->update([
-                        'expReportScore' => $request->expReportScore,
-                        'addReportScore' => true
-                    ]);
-            }
-        }else{              //没有记录，表示学生没提交该实验预习任务，创建新记录
-            $res = DB::table('expcollections')
-                ->insert([
-                    'stuId' => $request->stuId,
-                    'expTempId' => $request->expTempId,
-                    'expReportScore' => $request->expReportScore,
+            if (count($expCollection)) {                 //有记录，添加分数
+                if ($expCollection->addReportScore && $expCollection->addReportScore !== 'no') {       //已有分数，不用更新
+                    $res = true;
+                } else {
+                    $res = DB::table('expcollections')
+                        ->where('stuId', $item["stuId"])
+                        ->where('expTempId', $item["expTempId"])
+                        ->update([
+                            'expReportScore' => $item["expReportScore"],
+                            'addReportScore' => true
+                        ]);
+                }
+            } else {              //没有记录，表示学生没提交该实验预习任务，创建新记录
+                $res = ExpCollection::create([
+                    'stuId' => $item["stuId"],
+                    'expTempId' => $item["expTempId"],
+                    'expReportScore' => $item["expReportScore"],
                     'addReportScore' => true
                 ]);
+            }
+
+            if (!$res) {
+                return [
+                    'error' => -2
+                ];
+            }
         }
 
-        if (!$res){
-            return[
-                'error' => -2
-            ];
-        }else{
-            return[
-                'error' => 0
-            ];
-        }
+        return[
+            'error' => 0
+        ];
+
     }
 
     //添加最后的实验考试成绩时获取学生列表
-    public function getStuListForExpExam(){
+    public function getStuListForExpExam(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'class' => 'required'
+        ]);
+        if ($validator->fails()){
+            return[
+                'error' => -1,
+                'des' => $validator->errors()
+            ];
+        }
+
         $lists = DB::table('students')
             ->where('privilege',0)
-            ->select('stuId','name','class','expExam')
+            ->where('class',$request->class)
+            ->select('stuId','name','expExam')
             ->get();
 
         $data =[];
@@ -330,7 +364,6 @@ class ExpCollectionController extends Controller
             $data[] = [
                 'stuId' => $list->stuId,
                 'name' => $list->name,
-                'class' => $list->class,
                 'filled' => $filled,
                 'expExam' => $list->expExam
             ];
@@ -339,28 +372,47 @@ class ExpCollectionController extends Controller
         return $data;
     }
 
-    //添加某一位学生的实验考试成绩
+    //添加学生的实验考试成绩
     public function fillExpExam(Request $request){
-        $validator = Validator::make($request->all(),[
-            'stuId' => 'required',
-            'expExam' => 'required'
-        ]);
 
-        if ($validator->fails()){
+        if (!count(json_decode($request))){
             return[
                 'error' => -1,
-                'des' => $validator->errors()
+                'des' => '提交的数据为空'
             ];
         }
-
-        $res = DB::table('students')
-            ->where('stuId',$request->stuId)
-            ->update([
-                'expExam' => $request->expExam
+        foreach (json_decode($request) as $item) {
+            $validator = Validator::make($item->all(), [
+                'stuId' => 'required',
+                'expExam' => 'required'
             ]);
 
+            if ($validator->fails()) {
+                return [
+                    'error' => -1,
+                    'des' => $validator->errors()
+                ];
+            }
+        }
+
+        foreach (json_decode($request) as $item) {
+
+            $res = DB::table('students')
+                ->where('stuId', $item->stuId)
+                ->update([
+                    'expExam' => $item->expExam
+                ]);
+
+            if (!$res){
+                return[
+                    'error' => -2
+                ];
+            }
+
+        }
+
         return[
-            'error' => (!$res? -2 : 0)
+            'error' => 0
         ];
     }
 }

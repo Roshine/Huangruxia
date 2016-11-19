@@ -32,6 +32,12 @@ class AuthController extends Controller
      *
      * @return void
      */
+
+    public function redirectToLogin(){
+         return redirect($this->redirectAfterLogout);
+//        return redirect([to = $redirectAfterLogout]);
+    }
+
     public function __construct()
     {
         $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
@@ -48,7 +54,6 @@ class AuthController extends Controller
         return Validator::make($data, [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:students',
-//            'password' => 'required|min:6|confirmed',
             'stuId' => 'required|max:255|unique:students',
             'password' => 'required|min:6',
         ]);

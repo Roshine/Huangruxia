@@ -21,7 +21,8 @@ class HomeworkTempController extends Controller
             'Qdesc' => 'required',
             'answer' => 'required',
             'startTime' => 'required',
-            'deadLine' => 'required'
+            'deadLine' => 'required',
+            'week' => 'required|unique:homeworktemplates'
         ]);
 
         if ($validator->fails()) {
@@ -33,6 +34,7 @@ class HomeworkTempController extends Controller
 
         $title = $request->title;   //标题
         $target = $request->target; //课后作业目标
+        $week = $request->week;
         $content = json_encode($request->Qdesc);
         $answers = json_encode($request->answer);
         $everyAnsNum=json_encode([[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]);
@@ -41,7 +43,7 @@ class HomeworkTempController extends Controller
                 'published' => 'no',
                 'title'=>$title,
                 'target'=>$target,
-                'week' => 0,
+                'week' => $week,
                 'content'=>$content,
                 'answers'=>$answers,
                 'startTime'=>$request->startTime,
@@ -62,13 +64,23 @@ class HomeworkTempController extends Controller
             'target' => 'required',
             'startTime' => 'required',
             'deadLine' => 'required',
-            'week' => 'required',
+            'week' => 'required|unique:homeworktemplates',
         ]);
 
         if ($validator->fails()) {
             return [
                 'error' => -1,
                 'desc' => $validator->errors(),
+            ];
+        }
+
+        $questions = HomeworkQuestion::where('week',$request->week)
+            ->lists('id');
+
+        if (count($questions)<7){
+            return[
+                'error' => -3,
+                'desc' => '题库中该周的题目不足7道，不可创建'
             ];
         }
 
@@ -120,6 +132,7 @@ class HomeworkTempController extends Controller
                     'target' => $info->target,
                     'startTime' => $info->startTime,
                     'deadLine' => $info->deadLine,
+                    'week' => $info->week,
                     'Qdesc' => json_decode($info->content),
                     'answer' => json_decode($info->answers)
                 ]
@@ -168,6 +181,12 @@ class HomeworkTempController extends Controller
         }else {
             $con = new HomeworkQuesController();
             $content = $con->getcontent($info->week);       //获取随机7个题目
+            if (!$content){
+                return[
+                    'error' => -2,
+                    'des' => '获取题目失败'
+                ];
+            }
         }
         return [
             'error' => 0,
@@ -208,7 +227,7 @@ class HomeworkTempController extends Controller
                         ->where('homeworktemplates.id', '=', $homeworkTempId);
                 })
                 ->select('homeworktemplates.id', 'title', 'target', 'startTime', 'deadLine', 'content', 'homeworktemplates.answers', 'result',
-                    'resScore', 'experience', 'expScore', 'marked', 'difficulty', 'homeworkcollections.created_at')
+                    'resScore', 'experience', 'expScore', 'marked','remarks', 'difficulty', 'homeworkcollections.created_at')
                 ->first();
 
             if (!$info) {
@@ -217,13 +236,20 @@ class HomeworkTempController extends Controller
                 ];
             }
 
+            if (time() >= strtotime($info->deadLine) + 86400*3){
+                $afterDeadline = true;
+            }else{
+                $afterDeadline = false;
+            }
+
             return [
                 'error' => 0,
                 "data" => [
                     "title" => $info->title,
                     "target" => $info->target,
-                    "startTime" => $info->startTime,
-                    "deadLine" => $info->deadLine,
+//                    "startTime" => $info->startTime,
+//                    "deadLine" => $info->deadLine,
+                    "afterDeadline" => $afterDeadline,
                     "Qdesc" => json_decode($info->content),
                     "answer" => json_decode($info->answers),
                     "result" => json_decode($info->result),
@@ -231,8 +257,9 @@ class HomeworkTempController extends Controller
                     "selectscore" => $info->resScore,
                     "experience" => $info->experience,
                     "marked" => $info->marked,
+                    "remarks" => $info->remarks,
                     "expscore" => $info->expScore,
-                    "submitTime" => $info->created_at
+//                    "submitTime" => $info->created_at
                 ]
             ];
         }else{
@@ -293,7 +320,7 @@ class HomeworkTempController extends Controller
             ];
         }
 
-        $query = HomeworkTemplate::select('id','title','published','content');
+        $query = HomeworkTemplate::select('id','title','published','content','week');
 
         $num = $query->count();
 
@@ -312,8 +339,8 @@ class HomeworkTempController extends Controller
                 "id" => $homeworkTemp->id,
                 "title" => $homeworkTemp->title,
                 "published" => $homeworkTemp->published,
-                "type" => $type
-
+                "type" => $type,
+                "week" => $homeworkTemp->week
             ];
         }
 
@@ -332,15 +359,33 @@ class HomeworkTempController extends Controller
                 $join->on('homeworkcollections.homeworkTempId','=','homeworktemplates.id')
                     ->where('homeworkcollections.stuId','=',Auth::user()->stuId);
             })
-            ->select('homeworktemplates.id','title','startTime','deadLine','resScore','expScore')
+            ->select('homeworktemplates.id','title','startTime','deadLine','resScore','expScore','week')
             ->get();
         $data = [];
         foreach ($homeworktemps as  $homeworktemp){
             //判断是否在答题时间内
-            if (strtotime($homeworktemp->startTime)<=time()&&time()<=strtotime($homeworktemp->deadLine)+86400){
-                $duringtime = 'yes';
-            }else{
-                $duringtime = 'no';
+            if (Auth::user()->class <= 3) {     //周二上课的学生
+
+                $startTime = $homeworktemp->startTime;
+                $deadLine = $homeworktemp->deadLine;
+
+                if (strtotime($startTime)<=time()&&time()<=strtotime($deadLine)+86400){
+                    $duringtime = 'yes';
+                }else{
+                    $duringtime = 'no';
+                }
+
+            }else{          //周四上课的学生
+
+                $startTime = date('Y-m-d',strtotime("$homeworktemp->startTime + 2 day"));
+                $deadLine = date('Y-m-d',strtotime("$homeworktemp->deadLine + 2 day"));
+
+                if (strtotime($startTime) <= time() && time() <= strtotime($deadLine) + 86400) {
+                    $duringtime = 'yes';
+                } else {
+                    $duringtime = 'no';
+                }
+
             }
             //判断该学生是否已作答
             if ($homeworktemp->resScore===null){
@@ -351,12 +396,13 @@ class HomeworkTempController extends Controller
             $data[]=[
                 'homeworkTempId' => $homeworktemp->id,
                 'title' => $homeworktemp->title,
-                'startTime' => $homeworktemp->startTime,
-                'deadLine' => $homeworktemp->deadLine,
+                'startTime' => $startTime,
+                'deadLine' => $deadLine,
                 'duringtime' => $duringtime,
                 'submitted' => $submitted,
                 'selectscore' => $homeworktemp->resScore,
-                'expscore' => $homeworktemp->expScore
+                'expscore' => $homeworktemp->expScore,
+                'week' => $homeworktemp->week
             ];
         }
         return [
@@ -412,7 +458,8 @@ class HomeworkTempController extends Controller
             'title' => 'required',
             'target' => 'required',
             'Qdesc' => 'required',
-            'answer' => 'required'
+            'answer' => 'required',
+            'week' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -425,6 +472,7 @@ class HomeworkTempController extends Controller
         $id = $request->homeworkTempId;  //课后作业模板id
         $title = $request->title;   //标题
         $target = $request->target; //课后作业目标
+        $week = $request->week;     //周数
         $content = json_encode($request->Qdesc);    //课后作业题目和选项
         $answers = json_encode($request->answer);   //正确答案
         $everyAnsNum=json_encode([[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]);     //每个选项所选的人数
@@ -433,6 +481,7 @@ class HomeworkTempController extends Controller
                 'target'=>$target,
                 'content'=>$content,
                 'answers'=>$answers,
+                'week'=>$week,
                 'startTime'=>$request->startTime,
                 'deadLine'=>$request->deadLine,
                 'everyAnsNum'=>$everyAnsNum]
@@ -487,6 +536,18 @@ class HomeworkTempController extends Controller
             return[
                 'error' => -1,
                 'des' => $validator->errors()
+            ];
+        }
+
+        $type = DB::table('homeworkTempId')
+            ->where('id',$request->homeworkTempId)
+            ->select('content')
+            ->first();
+
+        if ($type->content == 'auto'){
+            return[
+                'error' => -1,
+                'des' => '该模板由系统自动出题，不可统计'
             ];
         }
 

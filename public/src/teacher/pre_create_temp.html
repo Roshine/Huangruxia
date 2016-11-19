@@ -9,7 +9,7 @@
 				<label for="topic_1_B" class="sr-only"></label><input type="text" class="form-control option"  placeholder="选项B内容，下同">
 				<label for="topic_1_C" class="sr-only"></label><input type="text" class="form-control option"  placeholder="选项C内容，下同">
 				<label for="topic_1_D" class="sr-only"></label><input type="text" class="form-control option"  placeholder="选项D内容，下同">
-				<label for="topic_1_answer" class="sr-only"></label><input type="text" class="form-control answer"  placeholder="第一题答案，下同">
+				<label for="topic_1_answer" class="sr-only"></label><input type="text" class="form-control answer"  placeholder="参考答案（A/B/C/D)，下同">
 			</div>
 		</div>
 		<div class="Qdesc">
@@ -56,20 +56,24 @@
 				<label for="topic_5_answer" class="sr-only"></label><input type="text" class="form-control answer" id="topic_5_answer">
 			</div>
 			<div class="expires form-inline">
-				<label for="start_time">开始时间</label>
+				<label for="startTime">开始时间</label>
 				<input type="date" class="form-control" id="startTime" placeholder="设置开始答题时间">
-				<label for="end_time">截止时间</label>
+				<label for="deadline">截止时间</label>
 				<input type="date" class="form-control" id="deadline" placeholder="结束答题时间"></input>
-				<label for="end_time">本课时学习目标</label>
+				<label for="target">本课时学习目标</label>
 				<input type="text" class="form-control" id="target" placeholder=""></input>
-				<label for="end_time">标题</label>
+				<label for="title">标题</label>
 				<input type="text" class="form-control" id="title" placeholder=""></input>
+				<label for="week">周数</label>
+				<input type="text" class="form-control" id="week" placeholder=""></input>
 			</div>
 		</div>
 		<div class="row">
 			<div id="pre_create_temp" class="col-md-10">
 				<input type="button" class="btn btn-success" id="create_submit" value="保存模板">
-			<div>
+				<span><h2>注意：</h2>截止时间说明：此截止时间为<b>周四</b>上课班级的截止时间，周二上课班级的截止时间会自动<b>提前两天</b>,
+					比如：周四上课班级的截止时间为周三晚12:00，则周二上课班级的截止时间为：周一晚12:00</span>
+			</div>
 		</div>
 	</form>
 	</div>

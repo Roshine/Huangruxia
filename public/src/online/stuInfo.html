@@ -1,0 +1,116 @@
+<div style="width: 400px; margin:0 auto; height: 350px; padding:10px; border:1px solid #eee; background:#fff;">
+    <ul id="myTab" class="nav nav-tabs">
+        <li class="active" style="width:50%;">
+            <a href="#email" data-toggle="tab">修改邮箱</a>
+        </li>
+        <li style="width:50%;"><a href="#modify_password" data-toggle="tab">修改密码</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content" style="padding-top:10px;">
+        <div class="tab-pane fade in active" id="email">
+            <p>
+              <div class="form-group">
+                <label>输入邮箱：</label><input name="tbEmail" type="text" class="form-control" id="tbEmail">
+              </div>
+              <button type="submit" class="btn btn-success" id="modify_email">修改邮箱</button>
+            </p>
+          </div>
+        <div class="tab-pane fade" id="modify_password">
+            <p>
+                <div class="form-group has-feedback">
+                    <label>原密码：</label>
+                    <input type="password" name="password" id="oldPassword" class="form-control" placeholder="原密码">
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <label>新密码</label>
+                    <input type="password" name="confirmPassword" id="newPassword" class="form-control" placeholder="新密码">
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                </div>
+                <button type="submit" class="btn btn-success" id="modify_psw">修改密码</button>
+            </p>
+        </div>
+    </div>
+</div>
+ <script type="text/javascript">
+      $(function(){
+        var oldemail='';
+        $.ajax({
+          url:'getStudentInfo',
+          type:'POST',
+          dataType:'json',
+          success:function(data){
+            var info=data.info;
+            oldemail=info.email;
+            $("#tbEmail").val(oldemail);
+          },
+          error: function(data){
+            console.log(data);
+          } 
+        });
+
+        function checkEmail(str){
+          var  re = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+          return re.test(str);
+        };
+
+        $("#modify_email").click(function(){
+            $('#modify_email').attr("disabled","disabled");
+          var email=$("#tbEmail").val();
+          if(email==oldemail){
+            alert('邮箱并没有改变！');
+          }else if(checkEmail(email)){
+            $.ajax({
+              url:'Modifyinformation',
+              type:'POST',
+              data:{"email":email},
+              dataType:'json',
+              success:function(data){
+                if(data.error==0){
+                 alert('邮箱修改成功！');                 
+               }
+              },
+              error: function(data){
+                console.log(data);
+              }
+            })
+          }else{
+            alert("请输入正确的邮箱格式")
+          }
+        })
+
+        $("#modify_psw").click(function(){
+            $('#modify_psw').attr("disabled","disabled");
+            var oldPassword=$("#oldPassword").val();
+            var newPassword=$("#newPassword").val();
+            if(oldPassword && newPassword){
+                if (newPassword.length<6) {
+                    alert('新密码至少为六位！');
+                }else{
+                    var pswdata={
+                        oldPassword:oldPassword,
+                        newPassword:newPassword
+                    };
+                    $.ajax({
+                        url:'ResetPassword',
+                        type:'POST',
+                        data:pswdata,
+                        dataType:'json',
+                        success:function(data){
+                            if(data.error==0){
+                                alert('密码修改成功！')
+                            }else{
+                                alert(data.des);
+                            }
+                            
+                        },
+                        error:function(data){
+                            console.log(data);
+                        }
+                    })
+                };
+          }else{
+            alert('请填写原密码和新密码！')
+          } 
+        })
+      })
+</script>

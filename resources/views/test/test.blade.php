@@ -5,9 +5,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>计算机科学与技术导论</title>
-    <link rel="stylesheet" href="{{ CDN_PATH }}/nprogress/nprogress.css">
-    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <!-- <link rel="stylesheet" href="{{ CDN_PATH }}/nprogress/nprogress.css">
+    <link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css"> -->
+    <link rel="stylesheet" href="{{ CDN_PATH }}/bootstrap/css/bootstrap.min.css">
     <style type="text/css">
         ul li{ list-style: none; height: 4rem; font-size: 2rem;}
     </style>
@@ -15,94 +17,61 @@
  -->
 </head>
 <body >
-    <div class="page-group">
-        <div class="page page-current">
-            <div class="content native-scroll" id="page-index">
-                <div class="content-inner">
-                  <div class="content-block-title">第五周</div>
-                  <div class="list-block">
-                    <ul>
-                      <li>
-                        <a href="/demos/tabs" class="item-link item-content">
-                          <div class="item-inner">
-                            <div class="item-title">课前预习</div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/demos/card" class="item-link item-content">
-                          <div class="item-inner">
-                            <div class="item-title">课后作业</div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/demos/grid" class="item-link item-content">
-                          <div class="item-inner">
-                            <div class="item-title">每周心得</div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/demos/modal" class="item-link item-content">
-                          <div class="item-inner">
-                            <div class="item-title">我的成就</div>
-                          </div>
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="list-block media-list">
-                    <ul>
-                      <li>
-                        <div class="item-content">
-                          <div class="item-media"><img src="http://gqianniu.alicdn.com/bao/uploaded/i4//tfscom/i3/TB10LfcHFXXXXXKXpXXXXXXXXXX_!!0-item_pic.jpg_250x250q60.jpg" style='width: 3.2rem;'></div>
-                          <div class="item-inner">
-                            <div class="item-title-row">
-                              <div class="item-title">标题</div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+  <div class="wrapper">
+      <header class="main-header">
+          <nav class="navbar navbar-inverse navheight" role="navigation">
+              <div>
+                  <ul class="nav navbar-nav">
+                      <li><a class="active" href="./online#/pre_class">课前预习</a></li>
+                     <li><a href="./online#/homework">课后作业</a></li>
+                     <li><a href="./online#/exp_test">实验测试</a></li>
+                     <li><a href="./online#/week_sum">每周心得</a></li>
+                     <li><a href="./online#/my_grades">我的成就</a></li>
+                  </ul>
               </div>
-            <div class="wrapper">
-                <!-- <header class="main-header">
-                    <nav class="navbar navbar-inverse navheight" role="navigation">
-                        <div>
-                            <ul class="nav navbar-nav">
-                                <li><a class="active" href="#/pre_class">课前预习</a></li>
-                                <li><a href="#/homework">课后作业</a></li>
-                                <li><a href="#/exp_test">实验测试</a></li>
-                                <li><a href="#/week_sum">每周总结</a></li>
-                                <li><a href="#/week_sum">我的成就</a></li>
-                                <li><a href=""><h3>test界面</h3></a></li> -->
-                            <!-- </ul>
-                        </div>
-                    </nav>
-                </header>
-                <div class="content-wrapper">
-                    <div class="container-fluid" id="main">
+          </nav>
+      </header>
+      <div class="content-wrapper">
+          <div class="container-fluid" id="main">
+             <div style="width: 400px; margin:0 auto; height: 350px; padding:10px; border:1px solid #eee;">
+                <ul id="myTab" class="nav nav-tabs">
+                    <li class="active" style="width:50%;">
+                        <a href="#email" data-toggle="tab">修改邮箱</a>
+                    </li>
+                    <li style="width:50%;"><a href="#modify_password" data-toggle="tab">修改密码</a></li>
+                </ul>
+                <div id="myTabContent" class="tab-content" style="padding-top:10px;">
+                    <div class="tab-pane fade in active" id="email">
+                        <p>
+                          <div class="form-group">
+                            <label>输入邮箱：</label><input name="tbEmail" type="text" class="form-control" id="tbEmail">
+                          </div>
+                          <button type="submit" class="btn btn-success" id="modify_email">修改邮箱</button>
+                        </p>
+                      </div>
+                    <div class="tab-pane fade" id="modify_password">
+                        <p>
+                            <div class="form-group has-feedback">
+                                <label>原密码：</label><input type="password" name="password" class="form-control" placeholder="原密码">
+                                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            </div>
+                            <div class="form-group has-feedback">
+                                <label>新密码</label><input type="password" name="confirmPassword" class="form-control" placeholder="新密码">
+                                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                            </div>
+                            <button type="submit" class="btn btn-success" id="modify_psw">修改密码</button>
+                        </p>
                     </div>
-                </div> -->
-
-                <!-- <footer class="main-footer">
-                    <div class="footer">
-                        <p> 武汉理工大学计算机与科学技术学院   地址：湖北省武汉市武汉理工大学  邮编：430070  2015-2017</p>
-                        <p>Copyright&nbsp;<span style="font-family:Arial, Helvetica, sans-serif;">©</span>computingdream.com </p>
-                    </div>
-                </footer> -->
-            </div>
-        </div>
-    </div>
-
+                </div>
+             </div>
+          </div>
+      </div>
+  </div>
     <script src="{{ CDN_PATH }}/jquery/jquery-2.1.4.min.js"></script>
+    <script src="{{ CDN_PATH }}/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ CDN_PATH }}/nprogress/nprogress.js"></script>
     <script src="{{ CDN_PATH }}/route/mm.routes.js"></script>
-    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
-    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
-    <!-- <script src="{{ ASSETS_PATH }}/online/route.js"></script> -->
+    <script src="{{ ASSETS_PATH }}/lt.js"></script>
+   
 </body>
 </html>

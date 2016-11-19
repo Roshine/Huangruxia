@@ -13,7 +13,8 @@ class TestScoreController extends Controller
     //填写随堂测试时获取学生列表
     public function getStuListForTestscore(Request $request){
         $validator = Validator::make($request->all(),[
-            'testId' => 'required'
+            'testId' => 'required',
+            'class' => 'required'
         ]);
         if ($validator->fails()){
             return[
@@ -26,11 +27,12 @@ class TestScoreController extends Controller
 
         $lists = DB::table('students')
             ->where('privilege',0)
+            ->where('class',$request->class)
             ->leftJoin('testscore',function ($join) use($testId){
                 $join->on('testscore.stuId','=','students.stuId')
                     ->where('testscore.testId','=',$testId);
             })
-            ->select('students.stuId','students.name','students.class','testScore')
+            ->select('students.stuId','students.name','testScore')
             ->get();
 
         $data = [];
@@ -44,7 +46,6 @@ class TestScoreController extends Controller
             $data[] = [
                 'stuId' => $list->stuId,
                 'name' => $list->name,
-                'class' => $list->class,
                 'filled' => $filled,
                 'testScore' => $list->testScore
             ];
@@ -52,28 +53,46 @@ class TestScoreController extends Controller
         return $data;
     }
 
-    //添加某一位学生的随堂测试成绩
+    //添加学生的随堂测试成绩
     public function fillTestScore(Request $request){
-        $validator = Validator::make($request->all(),[
-            'stuId' => 'required',
-            'testId' => 'required',
-            'testScore' => 'required'
-        ]);
-        if ($validator->fails()){
+
+        if (!count(json_decode($request))){
             return[
                 'error' => -1,
-                'des' => $validator->errors()
+                'des' => '提交的数据为空'
             ];
         }
 
-        $res = testScore::create([
-            'stuId' => $request->stuId,
-            'testId' => $request->testId,
-            'testScore' => $request->testScore
-        ]);
+        foreach (json_decode($request) as $item) {
+            $validator = Validator::make($item->all(), [
+                'stuId' => 'required',
+                'testId' => 'required',
+                'testScore' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return [
+                    'error' => -1,
+                    'des' => $validator->errors()
+                ];
+            }
+        }
+
+        foreach (json_decode($request) as $item) {
+            $res = testScore::create([
+                'stuId' => $item->stuId,
+                'testId' => $item->testId,
+                'testScore' => $item->testScore
+            ]);
+
+            if (!$res){
+                return[
+                    'error' => -2
+                ];
+            }
+        }
 
         return[
-            'error' => (!$res? -2 : 0)
+            'error' => 0
         ];
     }
 }

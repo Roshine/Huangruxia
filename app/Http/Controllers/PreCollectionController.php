@@ -28,8 +28,13 @@ class PreCollectionController extends Controller
             ];
         }
 
-        $deadline = PreTemplate::where('id',$request->pretempid)->select('deadLine')->first();  //判断是否超过答题时间
-        if(time()>=strtotime($deadline)+90000) {
+        $deadline = PreTemplate::where('id',$request->pretempid)->select('deadLine')->first()->deadLine;  //判断是否超过答题时间
+
+//        if (Auth::user()->class>3){
+//            $deadline = date('Y-m-d',strtotime("$deadline + 2 day"));
+//        }
+
+        if(time()<=strtotime($deadline)+90000) {
             $stuId = Auth::user()->stuId;
             $preTempId = $request->pretempid;
             $result = $request->result;
@@ -46,7 +51,7 @@ class PreCollectionController extends Controller
             );
 
             return [
-                'error' => (!$res ? -2 : 0),
+                'error' => (!$res ? -2 : 0)
             ];
         }else{
             return [
@@ -85,7 +90,7 @@ class PreCollectionController extends Controller
         $PreCollections = DB::table('precollections')
             ->join('students','students.stuId','=','precollections.stuId')
             ->where('preTempId',$request->tempid)
-            ->select('precollections.id','precollections.stuId','marked', 'resScore','experience','expScore','difficulty','name','class')
+            ->select('precollections.id','precollections.stuId','marked','remarks', 'resScore','experience','expScore','difficulty','name','class','precollections.created_at')
             ->get();
 
         if(!count($PreCollections)){
@@ -103,10 +108,12 @@ class PreCollectionController extends Controller
                 'stuclass' => $PreCollection->class,
                 'stuname' => $PreCollection->name,
                 'marked' => $PreCollection->marked,
+                'remarks' => $PreCollection->remarks,
                 'score' => $PreCollection->resScore,
                 'feedback' => $PreCollection->experience,
                 'expscore' => $PreCollection->expScore,
-                'difficulty' => json_decode($PreCollection->difficulty)
+                'difficulty' => json_decode($PreCollection->difficulty),
+                'submitTime' => $PreCollection->created_at
             ];
         }
 
@@ -117,7 +124,7 @@ class PreCollectionController extends Controller
     }
 
 
-    //根据预习答卷id查询答题内容
+    //根据预习答卷id查询答题内容--老师
     public function showPreCollectionInfo(Request $request){
 
         $validator = Validator::make($request->all(), [
@@ -190,11 +197,12 @@ class PreCollectionController extends Controller
 
         $precollectionid = $request->precollectionid;
         $expscore = $request->expscore;
+        $remarks = $request->remarks;
         DB::beginTransaction();
         //评分
         $res1 = DB::table('precollections')
             ->where('id',$precollectionid)
-            ->update(['expScore' => $expscore,'marked' => 'yes']);
+            ->update(['expScore' => $expscore,'remarks' => $remarks,'marked' => 'yes']);
 
         //添加分数到每周综合成绩
         $res2 = $this->addPreToWeek($precollectionid);
@@ -214,7 +222,7 @@ class PreCollectionController extends Controller
             }else{
                 DB::rollBack();
                 return[
-                    'error' => -2,
+                    'error' => -3,
                     'des' => '操作失败，可以评分但无法将其保存至每周综合成绩里，评分操作已撤销'
                 ];
             }

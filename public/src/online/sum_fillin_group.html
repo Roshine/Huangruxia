@@ -1,14 +1,14 @@
 <div style="padding-left:30px;">
 <div id="sum_fillin" class="row">
 	<div class="col-md-12 sum_week_div">
-		<div><h3>本周总结</h3></div>
-		<textarea id="week_sum" style=" width:400px; height:70px;line-height:20px; resize:none;"></textarea>
+		<div><h3>本周心得</h3></div>
+		<textarea id="week_sum" style=" width:90%; height:400px;line-height:20px; resize:both;overflow:auto;"></textarea>
 	</div>
 	<div class="col-md-12" style="line-height:20px;">
-		<h3>小组互评</h3>
-		<div class="col-md-12">
-			<div class="col-md-2 member"><span id="formember1">对XX的评价：</span></div>
-			<div class="col-md-6 assessment">
+		<!-- <h3>小组互评</h3> -->
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="col-md-3 col-sm-4 col-xs-4  member"><span id="formember1">对XX的评价：</span></div>
+			<div class="col-md-6 col-sm-6 col-xs-6 assessment">
 				<select id="member1Assessment">
 				  <option value ="0">请选择</option>
 				  <option value ="1">1</option>
@@ -19,9 +19,9 @@
 				</select>
 			</div>
 		</div>
-		<div class="col-md-12">
-			<div class="col-md-2 member"><span id="formember2">对xx的评价：</span></div>
-			<div class="col-md-6 assessment">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="col-md-3 col-sm-4 col-xs-4 member"><span id="formember2">对xx的评价：</span></div>
+			<div class="col-md-6 col-sm-6 col-xs-6 assessment">
 				<select id="member2Assessment">
 				  <option value ="0">请选择</option>
 				  <option value ="1">1</option>
@@ -32,9 +32,9 @@
 				</select>
 			</div>
 		</div>
-		<div class="col-md-12">
-			<div class="col-md-2 member"><span>自我评价：</span></div>
-			<div class="col-md-6 assessment">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="col-md-3 col-sm-4 col-xs-4 member"><span>自我评价：</span></div>
+			<div class="col-md-6 col-sm-6 col-xs-6 assessment">
 				<select id="selfAssessment">
 				  <option value ="0">请选择</option>
 				  <option value ="1">1</option>
@@ -45,9 +45,11 @@
 				</select>
 			</div>
 		</div>	
-	</div>
-	<div id="subm_fillin" class="col-md-10" style="margin-bottom:15px;">
-		<input type="button" class="btn btn-success" id="submit" value="确认提交">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="col-md-3 col-sm-4 col-xs-4 member"><input type="button" class="btn btn-success" id="submit" value="确认提交"></div>
+			<div class="col-md-6 col-sm-6 col-xs-6 assessment">
+			</div>
+		</div>	
 	</div>
 	<script src="assets/online/sum_fillin_group.js"></script>
 </div>

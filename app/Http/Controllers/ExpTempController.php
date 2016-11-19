@@ -40,6 +40,8 @@ class ExpTempController extends Controller
                 'answers'=>$answers,
                 'startTime'=>$request->startTime,
                 'deadLine'=>$request->deadLine,
+                'startTime2'=>$request->startTime2,
+                'deadLine2'=>$request->deadLine2,
                 'everyAnsNum'=>$everyAnsNum]
         );
 
@@ -62,7 +64,7 @@ class ExpTempController extends Controller
             ];
         }
 
-        $info = ExpTemplate::where('id',$request->expTempId)->select('title','target','startTime','deadLine','content','answers')->first();
+        $info = ExpTemplate::where('id',$request->expTempId)->select('title','target','startTime','deadLine','startTime2','deadLine2','content','answers')->first();
 
         if(!$info){
             return [
@@ -78,6 +80,8 @@ class ExpTempController extends Controller
                 'target' => $info->target,
                 'startTime' => $info->startTime,
                 'deadLine' => $info->deadLine,
+                'startTime2' => $info->startTime2,
+                'deadLine2' => $info->deadLine2,
                 'Qdesc' => json_decode($info->content),
                 'answer' => json_decode($info->answers)
             ]
@@ -98,12 +102,20 @@ class ExpTempController extends Controller
         }
 
         $expTempId = $request->expTempId;
-        $info = ExpTemplate::where('id',$expTempId)->select('title','target','startTime','deadLine','content')->first();
+        $info = ExpTemplate::where('id',$expTempId)->select('title','target','startTime','deadLine','startTime2','deadLine2','content')->first();
 
         if(!$info){
             return [
                 'error' => -2
             ];
+        }
+
+        if (Auth::user()->class <= 3){
+            $startTime = $info->startTime;
+            $deadLine = $info->deadLine;
+        }else{
+            $startTime = $info->startTime2;
+            $deadLine = $info->deadLine2;
         }
 
         return [
@@ -112,8 +124,8 @@ class ExpTempController extends Controller
                 "expTempId" => $expTempId,
                 "title" => $info->title,
                 "target" => $info->target,
-                "startTime" => $info->startTime,
-                "deadLine" => $info->deadLine,
+                "startTime" => $startTime,
+                "deadLine" => $deadLine,
                 "Qdesc" => json_decode($info->content)
             ]
         ];
@@ -139,8 +151,8 @@ class ExpTempController extends Controller
                     ->where('stuId','=',Auth::user()->stuId)
                     ->where('exptemplates.id','=',$expTempId);
             })
-            ->select('exptemplates.id','title','target','startTime','deadLine','content','answers', 'result',
-                'resScore', 'experience','expScore','marked','difficulty','expcollections.created_at')
+            ->select('exptemplates.id','title','target','deadLine','deadLine2','content','answers', 'result',
+                'resScore', 'experience','expScore','marked','remarks','difficulty','expcollections.created_at')
             ->first();
 
         if(!$info){
@@ -149,13 +161,24 @@ class ExpTempController extends Controller
             ];
         }
 
+        if (Auth::user()->class <= 3 ){
+            $deadLine = $info->deadLine;
+        }else{
+            $deadLine = $info->deadLine2;
+        }
+
+        if (time() >= strtotime($deadLine) + 86400){
+            $afterDeadline = true;
+        }else{
+            $afterDeadline = false;
+        }
+
         return [
             'error' => 0,
             "data" => [
                 "title" => $info->title,
                 "target" => $info->target,
-                "startTime" => $info->startTime,
-                "deadLine" => $info->deadLine,
+                "afterDeadline" => $afterDeadline,
                 "Qdesc" => json_decode($info->content),
                 "answer" => json_decode($info->answers),
                 "result" => json_decode($info->result),
@@ -163,8 +186,9 @@ class ExpTempController extends Controller
                 "selectScore" => $info->resScore,
                 "experience" => $info->experience,
                 "marked" => $info->marked,
+                "remarks" => $info->remarks,
                 "expScore" => $info->expScore,
-                "submitTime" => $info->created_at
+//                "submitTime" => $info->created_at
             ]
         ];
 
@@ -206,12 +230,20 @@ class ExpTempController extends Controller
                 $join->on('expcollections.expTempId','=','exptemplates.id')
                     ->where('expcollections.stuId','=',Auth::user()->stuId);
             })
-            ->select('exptemplates.id','title','startTime','deadLine','resScore','expScore')
+            ->select('exptemplates.id','title','startTime','deadLine','startTime2','deadLine2','resScore','expScore')
+            ->orderBy('exptemplates.id')
             ->get();
         $data = [];
         foreach ($exptemps as  $exptemp){
+            if (Auth::user()->class <= 3 ){
+                $startTime = $exptemp->startTime;
+                $deadLine = $exptemp->deadLine;
+            }else{
+                $startTime = $exptemp->startTime2;
+                $deadLine = $exptemp->deadLine2;
+            }
             //判断是否在答题时间内
-            if (strtotime($exptemp->startTime)<=time()&&time()<=strtotime($exptemp->deadLine)+86400){
+            if (strtotime($startTime)<=time()&&time()<=strtotime($deadLine)+86400){
                 $duringtime = 'yes';
             }else{
                 $duringtime = 'no';
@@ -225,8 +257,8 @@ class ExpTempController extends Controller
             $data[]=[
                 'expTempId' => $exptemp->id,
                 'title' => $exptemp->title,
-                'startTime' => $exptemp->startTime,
-                'deadLine' => $exptemp->deadLine,
+                'startTime' => $startTime,
+                'deadLine' => $deadLine,
                 'duringtime' => $duringtime,
                 'submitted' => $submitted,
                 'selectscore' => $exptemp->resScore,
@@ -304,19 +336,21 @@ class ExpTempController extends Controller
         $content = json_encode($request->Qdesc);    //实验题目和选项
         $answers = json_encode($request->answer);   //正确答案
         $everyAnsNum=json_encode([[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]);     //每个选项所选的人数
-        $res = ExpTemplate::where('id',$id)->update(['title'=>$title,
+        $res = ExpTemplate::where('id',$id)->update([
+                'title'=>$title,
                 'target'=>$target,
                 'content'=>$content,
                 'answers'=>$answers,
                 'startTime'=>$request->startTime,
                 'deadLine'=>$request->deadLine,
-                'everyAnsNum'=>$everyAnsNum]
-        );//更新模板
+                'startTime2'=>$request->startTime2,
+                'deadLine2'=>$request->deadLine2,
+                'everyAnsNum'=>$everyAnsNum
+            ]);//更新模板
 
         return [
             'error' => (!$res ? -2 : 0)
         ];
-
     }
 
     //统计每道题的每个答案所选的人数

@@ -44,7 +44,7 @@ class PasswordController extends Controller
     {
 
         return PasswordResets::create([
-            'stuId' => '0121210680406',
+            'stuId' => $data['stuId'],
             'token' => IDMaker::guid(),
         ]);
     }
@@ -122,7 +122,7 @@ class PasswordController extends Controller
         if($valid->fails()){
             return [
                 'error' => -1,
-                'desc' => $valid->errors()
+                'message' => $valid->errors()
             ];
         }
 

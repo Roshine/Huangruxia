@@ -21,7 +21,7 @@ class HomeworkCollectionController extends Controller
             'result' => 'required',
             'experience' => 'required',
             'difficulty' => 'required',
-            'questionId' => 'required'
+//            'questionId' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -31,8 +31,13 @@ class HomeworkCollectionController extends Controller
             ];
         }
 
-        $deadline = HomeworkTemplate::where('id',$request->homeworkTempId)->select('deadLine')->first();
-        if (time()>=strtotime($deadline)+90000) {   //判断是否超过截止时间
+        $deadline = HomeworkTemplate::where('id',$request->homeworkTempId)->select('deadLine')->first()->deadLine;
+
+        if (Auth::user()->class>3){
+            $deadline = date('Y-m-d',strtotime("$deadline + 2 day"));
+        }
+
+        if (time()<= strtotime($deadline)+90000) {   //判断是否超过截止时间
             $stuId = Auth::user()->stuId;
             $homeworkTempId = $request->homeworkTempId;
             $result = $request->result;
@@ -111,7 +116,7 @@ class HomeworkCollectionController extends Controller
         $HomeworkCollections = DB::table('homeworkcollections')
             ->join('students','students.stuId','=','homeworkcollections.stuId')
             ->where('homeworkTempId',$request->homeworkTempId)
-            ->select('homeworkcollections.id','homeworkcollections.stuId','marked', 'resScore','experience','expScore','difficulty','name','class')
+            ->select('homeworkcollections.id','homeworkcollections.stuId','marked', 'remarks','resScore','experience','expScore','difficulty','name','class','homeworkcollections.created_at')
             ->get();
 
         if(!count($HomeworkCollections)){
@@ -129,10 +134,12 @@ class HomeworkCollectionController extends Controller
                 'stuclass' => $HomeworkCollection->class,
                 'stuname' => $HomeworkCollection->name,
                 'marked' => $HomeworkCollection->marked,
+                'remarks' => $HomeworkCollection->remarks,
                 'score' => $HomeworkCollection->resScore,
                 'feedback' => $HomeworkCollection->experience,
                 'expscore' => $HomeworkCollection->expScore,
-                'difficulty' => json_decode($HomeworkCollection->difficulty)
+                'difficulty' => json_decode($HomeworkCollection->difficulty),
+                'submitTime' => $HomeworkCollection->created_at
             ];
         }
 
@@ -257,9 +264,10 @@ class HomeworkCollectionController extends Controller
 
         $homeworkCollectionId = $request->homeworkCollectionId;
         $expscore = $request->expscore;
+        $remarks = $request->remarks;
         DB::beginTransaction();
         //评分
-        $res1 = HomeworkCollection::where('id',$homeworkCollectionId)->update(['expScore' => $expscore,'marked' => 'yes']);
+        $res1 = HomeworkCollection::where('id',$homeworkCollectionId)->update(['expScore' => $expscore,'remarks' => $remarks,'marked' => 'yes']);
 
         $res2 = $this->addHomeworkToWeek($homeworkCollectionId);
 

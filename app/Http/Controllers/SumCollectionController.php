@@ -69,7 +69,7 @@ class SumCollectionController extends Controller
 
         $sumInfo = SumCollection::where('weekId',$request->weekId)
             ->where('stuId',Auth::user()->stuId)
-            ->select('summary','sumScore')
+            ->select('summary','remarks','sumScore')
             ->first();
 
         $assessment = Assessment::where('weekId',$request->weekId)
@@ -86,6 +86,7 @@ class SumCollectionController extends Controller
         return[
             'summary' => $sumInfo->summary,
             'sumScore' => $sumInfo->sumScore,
+            'remarks' => $sumInfo->remarks,
             'selfAssessment' => $assessment->assessment
         ];
     }
@@ -229,7 +230,7 @@ class SumCollectionController extends Controller
 
         $summary = SumCollection::where('groupId',Auth::user()->groupId)
             ->where('weekId',$request->weekId)
-            ->select('summary','sumScore')
+            ->select('summary','remarks','sumScore')
             ->first();
         if (!count($summary)){
             $summary = [
@@ -269,6 +270,7 @@ class SumCollectionController extends Controller
                 'self' => $self,
                 'summary' => $summary['summary'],
                 'sumScore' => $summary['sumScore'],
+                'remarks' => $summary['remarks'],
                 'assessment' => $data
             ];
         }
@@ -293,9 +295,10 @@ class SumCollectionController extends Controller
 
         $weekId = $request->weekId;
 
-        $groupList = SumCollection::where('weekId',$weekId)
+        $groupList = DB::table('sumcollections')
+            ->where('weekId',$weekId)
             ->where('groupId','>',0)
-            ->select('id','groupId','summary','marked','sumScore')
+            ->select('id','groupId','summary','marked','remarks','sumScore','created_at')
             ->orderBy('groupId')
             ->get();
 
@@ -307,7 +310,7 @@ class SumCollectionController extends Controller
                     ->on('assessments.weekId','=','sumcollections.weekId');
             })
             ->select('sumcollections.id','sumcollections.weekId','sumcollections.stuId','sumcollections.stuName',
-                'summary', 'marked','sumScore','assessment')
+                'summary', 'marked','remarks','sumScore','assessment','sumcollections.created_at')
             ->get();
 
         $group = [];
@@ -317,7 +320,9 @@ class SumCollectionController extends Controller
                 'groupId' => $item->groupId,
                 'summary' => $item->summary,
                 'marked' => $item->marked,
-                'sumScore' => $item->sumScore
+                'remarks' => $item->remarks,
+                'sumScore' => $item->sumScore,
+                'submitTime' => $item->created_at
             ];
         }
 
@@ -330,8 +335,10 @@ class SumCollectionController extends Controller
                 'stuName' => $item->stuName,
                 'summary' => $item->summary,
                 'marked' => $item->marked,
+                'remarks' => $item->remarks,
                 'sumScore' => $item->sumScore,
-                'selfAssessment' => $item->assessment
+                'selfAssessment' => $item->assessment,
+                'submitTime' => $item->created_at
             ];
         }
 
@@ -381,7 +388,7 @@ class SumCollectionController extends Controller
     public function fillSummaryMark(Request $request){
         $validator = Validator::make($request->all(),[
             'sumCollectionId' => 'required',
-            'sumScore' => 'required|min:0|max:100'
+            'sumScore' => 'required|integer|min:0|max:100'
         ]);
 
         if ($validator->fails()){
@@ -393,11 +400,12 @@ class SumCollectionController extends Controller
 
         $sumCollectionId = $request->sumCollectionId;
         $sumScore = $request->sumScore;
+        $remarks = $request->remarks;
 
         DB::beginTransaction();
 
         $res1 = SumCollection::where('id',$sumCollectionId)
-            ->update(['sumScore' => $sumScore,'marked' => 'yes']);
+            ->update(['sumScore' => $sumScore,'remarks' => $remarks,'marked' => 'yes']);
 
         $res2 = $this->addSumToWeek($sumCollectionId);
 
@@ -459,14 +467,14 @@ class SumCollectionController extends Controller
             $weekInfo = DB::table('weekScore')
                 ->where('stuId',$stuId)
                 ->where('week',$sumInfo[0]->weekId)
-                ->get();
+                ->first();
 
             if (count($weekInfo)){      //存在记录，更新
                 if ($weekInfo->sumScore !== null){
                     $res = true;
                 }else{
                     $res = weekScore::where('stuId',$stuId)
-                        ->where('weekId',$sumInfo[0]->weekId)
+                        ->where('week',$sumInfo[0]->weekId)
                         ->update([
                             'sumScore' => $sumInfo[0]->sumScore,
                             'weekScore' => $weekInfo->weekScore += $addScore

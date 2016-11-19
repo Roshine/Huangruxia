@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	window.history.forward(1);
 	var url= window.location.href;
 	var parames=url.split("?")[1];
 	parames=parames.split("&");
@@ -26,19 +27,22 @@ $(document).ready(function(){
 			selfId=data.self.stuId;
 			selfName=data.self.stuName;
 			console.log(leader);
-			if (!leader) {
-				$(".sum_week_div").css("display","none");
+			if (leader) {
+				$(".sum_week_div").css("display","block");
 				
+			}else{
+				$("#week_sum").css("display","none");
 			};
 		},
-		error:function(){
+		error:function(data){
+			console.log(data);
 		}
-	})
+	});
 	$("#submit").on('click',function(){
 		var summary=$("#week_sum").val();
-		let option1=$("#member1Assessment option:selected");
-		let option2=$("#member2Assessment option:selected");
-		let option3=$("#selfAssessment option:selected");
+		var option1=$("#member1Assessment option:selected");
+		var option2=$("#member2Assessment option:selected");
+		var option3=$("#selfAssessment option:selected");
 		var selfAssessment=option3.val();
 		var score1=option1.val();
 		var score2=option2.val();
@@ -63,7 +67,8 @@ $(document).ready(function(){
 			if (leader) {
 				if (!summary) {
 					alert('请填写本周总结');
-				}else{
+				}else if(confirm('确认提交否？提交后不可更改了哦！')){
+                    $('#submit').attr("disabled","disabled");
 					var senddata={
 						weekId:weekId,
 						summary:summary,
@@ -92,7 +97,6 @@ $(document).ready(function(){
 						assessment:assessment
 					};
 				$.ajax({
-
 					url:"submitSumGroupMember",
 					type:'POST',
 					datatype:'json',
@@ -101,11 +105,11 @@ $(document).ready(function(){
 						alert('提交成功！');
 						window.location.href='#/week_sum'
 					},
-					error:function(){
+					error:function(data){
+						console.log(data);
 						alert('提交失败，请组长统一提交本周总结！');
 					}
 				})
-				//
 			}
 		}
 	})

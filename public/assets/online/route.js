@@ -142,6 +142,13 @@ $(document).ready(function(){
         }).show();
     });
 
+    $.routes.add('/stuInfo', function(){
+        NProgress.start();
+        $('#main').load('./src/online/stuInfo.html',function(){
+            load_done();
+        }).show();
+    });
+
     $.routes.default('/pre_class');
     $.routes.start();
 });

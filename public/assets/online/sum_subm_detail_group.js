@@ -14,6 +14,7 @@ $(document).ready(function(){
 				$("#sumScore").text('本周总结老师评分：'+sumScore);
 			}
 			$("#week_sum").val(data.summary);
+			$("#remarks").val(data.remarks);
 			var assessment=data.assessment;
 			var member1Assessment=assessment[0].score;
 			var member2Assessment=assessment[1].score;

@@ -34,10 +34,10 @@ $(document).ready(function(){
 				var answer=answer;
 				var Qdescinfo=[];
 				var startTime=$("#startTime").val();
-				console.log(startTime);
 				var deadline=$("#deadline").val();
 				var target=$("#target").val();
 				var title=$("#title").val();
+				var week=$("#week").val();
 				$(".Qdesc").each(function(index,el){
 					var subject=$(this).find(".subject").val();
 					var optionsin=$(this).find(".option");
@@ -55,7 +55,8 @@ $(document).ready(function(){
 					"startTime":startTime,
 					"deadLine": deadline,
 					"Qdesc": Qdescinfo,
-					"answer":answer
+					"answer":answer,
+					"week":week
 				};
 				$.ajax({
 					url:'createHomeworkTemp',

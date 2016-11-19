@@ -18,7 +18,10 @@ class PreTempController extends Controller
             'title' => 'required',
             'target' => 'required',
             'Qdesc' => 'required',
-            'answer' => 'required'
+            'answer' => 'required',
+            'startTime' => 'required',
+            'deadLine' => 'required',
+            'week' => 'required|unique:pretemplates'
         ]);
 
         if ($validator->fails()) {
@@ -28,6 +31,7 @@ class PreTempController extends Controller
             ];
         }
 
+        $week = $request->week;
         $title = $request->title;   //标题
         $target = $request->target; //预习目标
         $content = json_encode($request->Qdesc);
@@ -35,6 +39,7 @@ class PreTempController extends Controller
         $everyAnsNum=json_encode([[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]);
 
         $res = PreTemplate::create([
+            'week' => $week,
             'published' => 'no',
             'title'=>$title,
             'target'=>$target,
@@ -65,7 +70,7 @@ class PreTempController extends Controller
         }
 
         $info = PreTemplate::where('id',$request->pretempid)
-            ->select('title','target','startTime','deadLine','content','answers')
+            ->select('title','target','startTime','deadLine','content','answers','week')
             ->first();
 
         if(!$info){
@@ -77,6 +82,7 @@ class PreTempController extends Controller
         return [
             'error' => 0,
             'data' => [
+                'week' => $info->week,
                 'pretempid' => $request->pretempid,
                 'title' => $info->title,
                 'target' => $info->target,
@@ -146,7 +152,7 @@ class PreTempController extends Controller
                     ->where('pretemplates.id','=',$pretempid);
             })
             ->select('pretemplates.id','title','target','startTime','deadLine','content','answers', 'result',
-                'resScore', 'experience','expScore','marked','difficulty','precollections.created_at')
+                'resScore', 'experience','expScore','marked','remarks','difficulty','precollections.created_at')
             ->first();
 
         if(!$info){
@@ -155,13 +161,19 @@ class PreTempController extends Controller
             ];
         }
 
+        if (time() >= strtotime($info->deadLine) + 86400){
+            $afterDeadline = true;
+        }else{
+            $afterDeadline = false;
+        }
+
         return [
             'error' => 0,
             "data" => [
                 "title" => $info->title,
                 "target" => $info->target,
-                "startTime" => $info->startTime,
-                "deadLine" => $info->deadLine,
+//                "startTime" => $info->startTime,
+//                "deadLine" => $info->deadLine,
                 "Qdesc" => json_decode($info->content),
                 "answer" => json_decode($info->answers),
                 "result" => json_decode($info->result),
@@ -169,11 +181,12 @@ class PreTempController extends Controller
                 "selectscore" => $info->resScore,
                 "experience" => $info->experience,
                 "marked" => $info->marked,
-                "expscore" => $info->expScore,
-                "submitTime" => $info->created_at
+                "afterDeadline" => $afterDeadline,
+                "remarks" => $info->remarks,
+                "expScore" => $info->expScore,
+//                "submitTime" => $info->created_at
             ]
         ];
-
     }
 
     //显示预习模板列表--老师
@@ -190,7 +203,7 @@ class PreTempController extends Controller
             ];
         }
 
-        $query = PreTemplate::select('id','title','published');
+        $query = PreTemplate::select('id','title','published','week');
 
         $num = $query->count();
 
@@ -212,16 +225,44 @@ class PreTempController extends Controller
                 $join->on('precollections.preTempId','=','pretemplates.id')
                     ->where('precollections.stuId','=',Auth::user()->stuId);
             })
-            ->select('pretemplates.id','title','startTime','deadLine','resScore','expScore')
+            ->select('pretemplates.id','title','startTime','deadLine','resScore','expScore','week')
             ->get();
         $data = [];
         foreach ($pretemps as  $pretemp){
             //判断是否在答题时间内
-            if (strtotime($pretemp->startTime)<=time()&&time()<=strtotime($pretemp->deadLine)+86400){
+//            if (Auth::user()->class <= 3) {     //周二上课的学生
+//
+//                $startTime = $pretemp->startTime;
+//                $deadLine = $pretemp->deadLine;
+//
+//                if (strtotime($startTime) <= time() && time() <= strtotime($deadLine) + 86400) {
+//                    $duringtime = 'yes';
+//                } else {
+//                    $duringtime = 'no';
+//                }
+//
+//            }else{          //周四上课的学生
+//
+//                $deadLine = date('Y-m-d',strtotime("$pretemp->deadLine + 2 day"));
+//                $startTime = $pretemp->startTime;
+//
+//                if (strtotime($startTime) <= time() && time() <= strtotime($deadLine) + 86400) {
+//                    $duringtime = 'yes';
+//                } else {
+//                    $duringtime = 'no';
+//                }
+//
+//            }
+
+            $startTime = $pretemp->startTime;
+            $deadLine = $pretemp->deadLine;
+
+            if (strtotime($startTime) <= time() && time() <= strtotime($deadLine) + 86400) {
                 $duringtime = 'yes';
-            }else{
+            } else {
                 $duringtime = 'no';
             }
+
             //判断该学生是否已作答
             if ($pretemp->resScore===null){
                 $submitted = 'no';
@@ -231,12 +272,13 @@ class PreTempController extends Controller
             $data[]=[
                 'pretempid' => $pretemp->id,
                 'title' => $pretemp->title,
-                'startTime' => $pretemp->startTime,
-                'deadLine' => $pretemp->deadLine,
+                'startTime' => $startTime,
+                'deadLine' => $deadLine,
                 'duringtime' => $duringtime,
                 'submitted' => $submitted,
                 'selectscore' => $pretemp->resScore,
                 'expscore' => $pretemp->expScore,
+                'week' => $pretemp->week
             ];
         }
         return [
@@ -294,7 +336,8 @@ class PreTempController extends Controller
             'Qdesc' => 'required',
             'answer' => 'required',
             'startTime' => 'required',
-            'deadLine' => 'required'
+            'deadLine' => 'required',
+            'week' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -307,17 +350,20 @@ class PreTempController extends Controller
         $id = $request->pretempid;  //预习模板id
         $title = $request->title;   //标题
         $target = $request->target; //预习目标
+        $week = $request->week;     //周数
         $content = json_encode($request->Qdesc);    //预习题目和选项
         $answers = json_encode($request->answer);   //正确答案
         $everyAnsNum=json_encode([[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]);     //每个选项所选的人数
-        $res = PreTemplate::where('id',$id)->update(['title'=>$title,
+        $res = PreTemplate::where('id',$id)->update([
+            'title'=>$title,
             'target'=>$target,
             'content'=>$content,
             'answers'=>$answers,
             'startTime'=>$request->startTime,
             'deadLine'=>$request->deadLine,
-            'everyAnsNum'=>$everyAnsNum]
-        );//更新模板
+            'everyAnsNum'=>$everyAnsNum,
+            'week'=>$week
+        ]);//更新模板
 
         return [
             'error' => (!$res ? -2 : 0)

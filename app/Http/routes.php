@@ -1,6 +1,9 @@
 <?php
 //测试路由
-//Route::get('Modifyinformation','StudentsController@Modifyinformation');
+//Route::get('getScores','StudentsController@getScores');     //已添加
+//Route::get('fillChapterScore','ChapterSumController@fillChapterScore');     //已添加
+//Route::get('countFinalScore','StudentsController@countFinalScore');
+//Route::get('importStuInfo','StudentsController@importStuInfo');     //导入学生信息
 
 
 /*
@@ -19,7 +22,7 @@ Route::post('auth/login','Auth\AuthController@postLogin');
 Route::get('auth/register','Auth\AuthController@getRegister');
 Route::post('auth/register','Auth\AuthController@postRegister');
 Route::get('auth/logout','Auth\AuthController@logout');
-
+Route::get('','Auth\AuthController@redirectToLogin');
 
 //进入学生或老师界面
 Route::get('/online','Online\OnlineController@getOnline');
@@ -38,6 +41,7 @@ Route::group(['middleware' => 'auth'],function() {
     Route::post('getStudentInfo', 'StudentsController@getStudentInfo'); //学生获取个人信息
     Route::post('Modifyinformation','StudentsController@Modifyinformation'); //修改个人信息
     Route::post('ResetPassword','ResetPasswordController@Resetpassword');//修改密码
+    Route::post('getScores','StudentsController@getScores');     //学生查看成绩
 });
 
 
@@ -647,12 +651,9 @@ Route::group(['middleware' => 'teacherAuth'],function() {
     Route::post('fillExpExpMark','ExpCollectionController@fillExpExpMark');                 //填写实验心得分数
 
     Route::post('getStuListForReportScore','ExpCollectionController@getStuListForReportScore');           //输入学生实验报告分数时获取学生列表
-
-    Route::post('fillReportScore','ExpCollectionController@addReportScore');          //添加某个学生的实验报告分数
-
+    Route::post('fillReportScore','ExpCollectionController@addReportScore');          //添加学生的实验报告分数
     Route::post('getStuListForExpExam','ExpCollectionController@getStuListForExpExam');          //添加最后的实验考试成绩时获取学生列表
-
-    Route::post('fillExpExam','ExpCollectionController@fillExpExam');          //添加某个学生的实验考试分数
+    Route::post('fillExpExam','ExpCollectionController@fillExpExam');          //添加学生的实验考试分数
 
 });
 
@@ -1104,21 +1105,16 @@ Route::group(['middleware' => 'teacherAuth'],function() {
 });
 
 
-
-//每章总结--老师
+//计算所有学生的某一章综合成绩
 Route::group(['middleware' => 'teacherAuth'],function() {
-    Route::post('getStuListForChapterSum','ChapterSumController@getStuListForChapterSum');      //添加每章总结时获取学生列表
-    Route::post('fillChapterSumScore','ChapterSumController@fillChapterSumScore');      //添加某个学生的某章总结分数，并且算出该章成绩（添加时确保该章所有周数已评分，否则评分不会被计入章成绩）
+    Route::post('fillChapterScore','ChapterSumController@fillChapterScore');
 });
 
 
-
-//随堂测试
+//计算所有学生的期末成绩
 Route::group(['middleware' => 'teacherAuth'],function() {
-    Route::post('getStuListForTestscore','TestScoreController@getStuListForTestscore');     //添加随堂测试成绩时获取学生列表
-    Route::post('fillTestScore','TestScoreController@fillTestScore');    //添加某一位学生的随堂测试成绩
+    Route::post('countFinalScore','StudentsController@countFinalScore');
 });
-
 
 
 //计算每道题的每个答案选的人数--老师
@@ -1142,3 +1138,16 @@ Route::group(['middleware' => 'teacherAuth'],function() {
     Route::post('expCountNum', 'ExpTempController@countNum');    //实验学生答卷结果统计
     Route::post('homeworkCountNum', 'HomeworkTempController@countNum');  //课后作业学生答卷结果统计
 });
+
+
+////每章总结--老师
+//Route::group(['middleware' => 'teacherAuth'],function() {
+//    Route::post('getStuListForChapterSum','ChapterSumController@getStuListForChapterSum');      //添加每章总结时获取学生列表
+//    Route::post('fillChapterSumScore','ChapterSumController@fillChapterSumScore');      //添加学生的某章总结分数，并且算出该章成绩（添加时确保该章所有周数已评分，否则评分不会被计入章成绩）
+//});
+
+////随堂测试
+//Route::group(['middleware' => 'teacherAuth'],function() {
+//    Route::post('getStuListForTestscore','TestScoreController@getStuListForTestscore');     //添加随堂测试成绩时获取学生列表
+//    Route::post('fillTestScore','TestScoreController@fillTestScore');    //添加某一位学生的随堂测试成绩
+//});

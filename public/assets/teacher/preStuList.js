@@ -8,7 +8,6 @@ $(document).ready(function(){
 	var senddata=parame[1];
 	$.ajax({
 		url:'preCollectionList',
-		//url:'assets/teacher/pre_stulist.json',
 		dataType:'json',
 		type:'POST',
 		data: {"tempid":senddata},
@@ -33,20 +32,22 @@ $(document).ready(function(){
             	showRefresh: true,                  //是否显示刷新按钮
            		 minimumCountColumns: 2,             //最少允许的列数
            		 clickToSelect: true,                //是否启用点击选中行
-            	height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            	// height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
            		 uniqueId: "collectionid",                     //每一行的唯一标识，一般为主键列
-	            columns: [{
-	                field: 'stuclass',
-	                title: '班级',
-	                class: 'col-md-1'
-	            }, {
+	            columns: [
+	            //     {
+	            //     field: 'stuclass',
+	            //     title: '班级',
+	            //     class: 'col-md-1'
+	            // },
+                    {
 	                field: 'stuname',
 	                title: '姓名',
 	                class: 'col-md-1'
 	            }, {
 	                field: 'stuId',
 	                title: '学号',
-	                class: 'col-md-2'
+	                class: 'col-md-1'
 	            }, {
 	                field: 'score',
 	                title: '选择题得分',
@@ -54,22 +55,35 @@ $(document).ready(function(){
 	            }, {
 	                field: 'feedback',
 	                title: '预习心得',
-	                class: 'col-md-5'
+	                class: 'col-md-4'
 	            }, {
 	                field: 'expscore',
 	                title: '操作',
 	                formatter:markFormatter,
 	                events:actionEvents
-	            }]
+	            },{
+                    field: 'remarks',
+                    title: '备注',
+                    class: 'col-md-1'
+	            },{
+					field: 'submitTime',
+					title: '提交时间',
+					class: 'col-md-1'
+				}]
         	});
 			function markFormatter(value, row, index){
 				if(value==null){
 					return ['<input class="btn btn-info view" type="button" value="查看">',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
-							'<input class="expscore"',
+							'<input class="expscore" placeholder="0-5分"',
 							'id="',
-							row.stuId,
-							'"  style="width:30px;" type="text" >',
+							row.stuId + 'expscore',
+							'"  style="width:50px;" type="text" >',
+							'&nbsp;&nbsp;&nbsp;&nbsp;',
+							'<input class="remarks" placeholder="备注"',
+							'id="',
+							row.stuId + 'remarks',
+							'"  style="width:200px;" type="text" >',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
 							'<input class="btn btn-success grading" type="button" value="评分">'
 							].join('');
@@ -81,28 +95,51 @@ $(document).ready(function(){
 							'">'
 							].join('');
 				}
-			};
+			}
 			
 		}
 	});
 	window.actionEvents = {
 			    'click .view': function (e, value, row, index) {
 			    	var collectionid=row.collectionid;
-			        window.location.href="#/preStuDetail?precollectionid="+collectionid+"&mark=yes";
+			        //window.location.href="#/preStuDetail?precollectionid="+collectionid+"&mark=yes";
+			        window.open("#/preStuDetail?precollectionid="+collectionid+"&mark=yes");
 			    },
 			    'click .grading': function (e, value, row, index) {
 			       var collectionid=row.collectionid;
 			       var gradingid=row.stuId;
-			       var expscore = $("#"+gradingid).val();
-			       $.ajax({
-			       	url:'fillPreExpMark',
-			       	type:'POST',
-			       	data: {"precollectionid":collectionid,"expscore":expscore},
-			       	success: function(){
-			       		$("#preStuListtable").bootstrapTable('updateCell', {"index":index,"field":"expscore","value":expscore});
-			       		alert('评分成功！');
-			       	}
-			       })
+			       var expscore = $("#"+gradingid+'expscore').val();
+                    var remarks = $("#"+gradingid+'remarks').val();
+                    if (expscore == ''){
+                        alert("还没填分数");
+                    }else if(expscore<=5 && expscore>=0){
+			       		$.ajax({
+					       	url:'fillPreExpMark',
+					       	type:'POST',
+					       	data: {"precollectionid":collectionid,"expscore":expscore,"remarks":remarks},
+					       	success: function(data){
+					       		if (data.error == 0) {
+									$("#preStuListtable").bootstrapTable('updateCell', {
+										"index": index,
+										"field": "expscore",
+										"value": expscore
+									});
+									$("#preStuListtable").bootstrapTable('updateCell', {
+										"index": index,
+										"field": "remarks",
+										"value": remarks
+									});
+								}else {
+									alert(data.des);
+								}
+					       	},
+					       	error:function () {
+								alert('网络错误！')
+							}
+					       })
+			       }else{
+			       		alert("分数为0——5");
+			       }
 			    }
 	};
 })

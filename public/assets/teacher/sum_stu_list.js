@@ -38,14 +38,21 @@ $(document).ready(function(){
 		            }, {
 		                field: 'summary',
 		                title: '每周总结',
-		                class: 'col-md-9'
+		                class: 'col-md-6'
 		            }, {
 		                field: 'sumScore',
-		                title: '评分',
-		                class: 'col-md-2',
+		                title: '操作',
 		                formatter:markFormatter,
 		                events:actionEvents
-		            }]
+		            },{
+						field: 'remarks',
+						title: '备注',
+						class: 'col-md-1'
+					}, {
+                        field: 'submitTime',
+                        title: '提交时间',
+                        class: 'col-md-1'
+                    }]
 	        	});	
 			}
 
@@ -62,7 +69,7 @@ $(document).ready(function(){
 	            	showRefresh: true,                  //是否显示刷新按钮
 	           		 minimumCountColumns: 2,             //最少允许的列数
 	           		 clickToSelect: true,                //是否启用点击选中行
-	            	height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+	            	// height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 	           		// uniqueId: "",                     //每一行的唯一标识，一般为主键列
 		            columns: [{
 		                field: 'stuId',
@@ -75,24 +82,36 @@ $(document).ready(function(){
 		            },{
 		                field: 'summary',
 		                title: '每周总结',
-		                class: 'col-md-8'
+		                class: 'col-md-5'
 		            }, {
 		                field: 'sumScore',
 		                title: '评分',
-		                class: 'col-md-2',
 		                formatter:marksingleFormatter,
 		                events:actionEvents
-		            }]
+		            },{
+                        field: 'remarks',
+                        title: '备注',
+                        class: 'col-md-1'
+                    },{
+                        field: 'submitTime',
+                        title: '提交时间',
+                        class: 'col-md-1'
+                    }]
 	        	});	
 
 			function markFormatter(value, row, index){
 				if(value==null){
 					return ['<input class="btn btn-info view" type="button" value="查看">',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
-							'<input class="expscore"',
+							'<input class="expscore" placeholder="0-100分"',
 							'id="',
-							row.sumCollectionId,
-							'"  style="width:30px;" type="text" >',
+							row.sumCollectionId+'expscore',
+							'"  style="width:60px;" type="text" >',
+                            '&nbsp;&nbsp;&nbsp;&nbsp;',
+                            '<input class="remarks" placeholder="备注"',
+                            'id="',
+                            row.sumCollectionId+'remarks',
+                            '"  style="width:200px;" type="text" >',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
 							'<input class="btn btn-success grading" type="button" value="评分">'
 							].join('');
@@ -108,10 +127,15 @@ $(document).ready(function(){
 
 			function marksingleFormatter(value, row, index){
 				if(value==null){
-					return ['<input class="expscore"',
+					return ['<input class="expscore" placeholder="0-100分"',
 							'id="',
-							row.sumCollectionId,
-							'"  style="width:30px;" type="text" >',
+							row.sumCollectionId+'expscore',
+							'"  style="width:60px;" type="text" >',
+                            '&nbsp;&nbsp;&nbsp;&nbsp;',
+                            '<input class="remarks" placeholder="备注"',
+                            'id="',
+                            row.sumCollectionId+'remarks',
+                            '"  style="width:200px;" type="text" >',
 							'&nbsp;&nbsp;&nbsp;&nbsp;',
 							'<input class="btn btn-success grading" type="button" value="评分">'
 							].join('');
@@ -132,22 +156,53 @@ $(document).ready(function(){
 			    },
 			    'click .grading': function (e, value, row, index) {
 			       var sumCollectionId=row.sumCollectionId;
-			       var sumScore = $("#"+sumCollectionId).val();
+			       var sumScore = $("#"+sumCollectionId+'expscore').val();
+			       var remarks = $("#"+sumCollectionId+'remarks').val();
 			       var stuId=row.stuId;
 			       //alert(sumScore);
-			       $.ajax({
-				       	url:'fillSummaryMark',
-				       	type:'POST',
-				       	data: {"sumCollectionId":sumCollectionId,"sumScore":sumScore},
-				       	success: function(data){
-				       		if(stuId==undefined){
-				       			$("#sumStuListGrouptable").bootstrapTable('updateCell', {"index":index,"field":"sumScore","value":sumScore});
-				       		}else{
-				       			$("#sumStuListtable").bootstrapTable('updateCell', {"index":index,"field":"sumScore","value":sumScore});
-				       		}
-				       		alert('评分成功！');
-				       	}
-			       })
+					if (sumScore == ''){
+						alert('还没有填写分数')
+					}else if(sumScore<=100 && sumScore>=0) {
+						$.ajax({
+							url: 'fillSummaryMark',
+							type: 'POST',
+							data: {"sumCollectionId": sumCollectionId, "sumScore": sumScore,"remarks":remarks},
+							success: function (data) {
+								if (data.error == 0) {
+									if (stuId == undefined) {
+										$("#sumStuListGrouptable").bootstrapTable('updateCell', {
+											"index": index,
+											"field": "sumScore",
+											"value": sumScore
+										});
+										$("#sumStuListGrouptable").bootstrapTable('updateCell', {
+											"index": index,
+											"field": "remarks",
+											"value": remarks
+										});
+									} else {
+										$("#sumStuListtable").bootstrapTable('updateCell', {
+											"index": index,
+											"field": "sumScore",
+											"value": sumScore
+										});
+										$("#sumStuListtable").bootstrapTable('updateCell', {
+											"index": index,
+											"field": "remarks",
+											"value": remarks
+										});
+									}
+								}else {
+									alert(data.des);
+								}
+							},
+							error:function () {
+								alert('网络错误')
+							}
+						})
+					}else{
+						alert('分数为0——100');
+					}
 			    }
 	};
 })

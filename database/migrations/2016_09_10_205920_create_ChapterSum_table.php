@@ -16,8 +16,8 @@ class CreateChapterSumTable extends Migration
             $table->increments('id');
             $table->string('stuId');
             $table->integer('chapter');
-            $table->integer('chapterSumScore');
-            $table->float('chapterScore');
+            $table->integer('chapterSumScore')->nullable();
+            $table->float('chapterScore')->nullable();
             $table->timestamps();
         });
     }

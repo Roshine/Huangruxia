@@ -6,7 +6,6 @@ $(document).ready(function(){
 	var published=publish[1];
 	var parame=parames[0].split('=');
 	var pretempid=parame[1];//为tempid
-	console.log(pretempid);
 	$.ajax({
 		url: 'homeworkTempInfo',
 		dataType: 'json',
@@ -45,7 +44,7 @@ $(document).ready(function(){
 					"week":week,
 					"homeworkTempId":pretempid
 				};
-				console.log(senddata);
+				//console.log(senddata);
 				$.ajax({
 					url:'modifyHomeworkTempAuto',
 					type:'POST',

@@ -1,1 +1,186 @@
-<div>我的成就</div>
+<!-- <div>正在更新，敬请期待......</div>
+<div>可以调戏以下图表君~~</div> -->
+<div>
+	<div id="weekchart" style="height:400px;"></div>
+	<div id="chapterchart" style="height:400px;"></div>
+	<div id="expchart" style="height:400px;"></div>
+	<script type="text/javascript">
+	$(function(){
+		$.ajax({
+			url:'getScores',
+			type:'POST',
+			dataType:'json',
+			success: function(data){
+				drow_chart(data);
+			},
+			error: function(data){
+				alert(data);
+			}
+		})
+	})
+    
+    function drow_chart(data){
+        // 基于准备好的dom，初始化echarts图表
+        var weekChart = echarts.init(document.getElementById('weekchart')); 
+        var chapterchart = echarts.init(document.getElementById('chapterchart')); 
+        var expchart = echarts.init(document.getElementById('expchart')); 
+        var pre_data=data.preScore;
+        var hom_data=data.homeworkScore;
+        var sum_data=data.sumScore;
+        var chap_data=data.chapterScore;
+        var exp_rep_data=data.expReportScore;//实验报告
+        var exp_test_data=data.experimentScore;//实验预习（测试）
+        var total=89;
+        var weekoption = {
+		    tooltip : {
+		        trigger: 'axis',
+		        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+		            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+		        }
+		    },
+		    legend: {
+		        data:['课前预习','课后作业','每周心得']
+		    },
+		    toolbox: {
+		        show : true,
+		        orient: 'vertical',
+		        x: 'right',
+		        y: 'center',
+		        feature : {
+		            mark : {show: true},
+		            dataView : {show: true, readOnly: true},
+		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+		            restore : {show: true},
+		            saveAsImage : {show: true}
+		        }
+		    },
+		    calculable : false,
+		    xAxis : [
+		        {
+		            type : 'category',
+		            data : ['第五周','第六周','第七周','第八周','第九周','第十周','第十一周','第十二周','第十三周','第十四周','第十五周','第十六周','第十七周','第十八周','第十九周']
+		        }
+		    ],
+		    yAxis : [
+		        {
+		            type : 'value'
+		        }
+		    ],
+		    series : [
+		        {
+		            name:'课前预习',
+		            type:'bar',
+		            data:pre_data
+		        },
+		        {
+		            name:'课后作业',
+		            type:'bar',
+		            data:hom_data
+		        },
+		        
+		        {
+		            name:'每周心得',
+		            type:'bar',
+		            data:sum_data
+		        }         
+		    ]
+		};
+
+		var chapteroption = {
+		    tooltip : {
+		        trigger: 'axis',
+		        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+		            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+		        }
+		    },
+		    legend: {
+		        data:['每章总结']
+		    },
+		    toolbox: {
+		        show : true,
+		        orient: 'vertical',
+		        x: 'right',
+		        y: 'center',
+		        feature : {
+		            dataView : {show: true, readOnly: true},
+		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']}
+		        }
+		    },
+		    calculable : false,
+		    xAxis : [
+		        {
+		            type : 'category',
+		            data : ['第一章','第二章','第三章','第四章','第五章','第六章','第七章']
+		        }
+		    ],
+		    yAxis : [
+		        {
+		            type : 'value'
+		        }
+		    ],
+		    series : [
+		        {
+		            name:'本章总结',
+		            type:'bar',
+		            data:chap_data
+		        }
+		    ]
+		};
+
+		var expoption = {
+		    tooltip : {
+		        trigger: 'axis',
+		        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+		            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+		        }
+		    },
+		    legend: {
+		        data:['实验测试','实验报告']
+		    },
+		    toolbox: {
+		        show : true,
+		        orient: 'vertical',
+		        x: 'right',
+		        y: 'center',
+		        feature : {
+		            dataView : {show: true, readOnly: true},
+		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']}
+		        }
+		    },
+		    calculable : false,
+		    xAxis : [
+		        {
+		            type : 'category',
+		            data : ['第一次实验','第二次实验','第三次实验','第四次实验','第五次实验']
+		        }
+		    ],
+		    yAxis : [
+		        {
+		            type : 'value'
+		        }
+		    ],
+		    series : [
+		    {
+		            name:'实验测试',
+		            type:'bar',
+		            data:exp_test_data
+		        },
+		        {
+		            name:'实验报告',
+		            type:'bar',
+		            data:exp_rep_data
+		        }
+		        
+		    ]
+		};
+                    
+
+        // 为echarts对象加载数据 
+        weekChart.setOption(weekoption); 
+        chapterchart.setOption(chapteroption); 
+        expchart.setOption(expoption);
+    }
+
+    </script>
+
+</div>

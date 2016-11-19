@@ -24,7 +24,7 @@ class UnitQuestionsseeder extends Seeder
 //            'answer' => str_random(10),
 //            'chapter' => '1',
 //         ]);
-//        填充课前预习题库
+//        填充课后练习题库
 //        $UnitQuestion = factory(HomeworkQuestion::class,20)->create();
 //        $UnitQuestion = factory(PreCollection::class,10)->create();
 
@@ -64,9 +64,9 @@ class UnitQuestionsseeder extends Seeder
 //        ]);
         //填充每周总结模板
         SumTemplate::create([
-            'weekId' => '7',
-            'startTime' => '2016-9-10',
-            'deadLine' => '2016-8-11'
+            'weekId' => '5',
+            'startTime' => '2016-9-30',
+            'deadLine' => '2016-10-2'
         ]);
         //填充用户
 //        User::create([

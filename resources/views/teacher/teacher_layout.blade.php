@@ -22,8 +22,8 @@
                     <!-- <li><a href="#/class_discuss">课堂讨论</a></li> -->
                     <li><a href="#/homework">课后作业</a></li>
                     <li><a href="#/exp_test">实验测试</a></li>
-                    <li><a href="#/week_sum">每周心得</a></li>
-                    <li><a href="#/fill_grades">成绩录入</a></li>
+                    <li><a href="#/week_sum">每周总结</a></li>
+                    <li><a href="#/fill_grades">计算成绩</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                         <li id="logout" style="margin-right:20px;"><a href="auth/logout">注销 </a></li>

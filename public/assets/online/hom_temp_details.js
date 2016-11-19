@@ -8,7 +8,7 @@ $(document).ready(function(){
 	if(write=='yes'){
 		$("#submit").css("display","none");
 		$.ajax({
-			url:'ssets/online/pre_class_detail.json',
+			url:'assets/online/pre_class_detail.json',
 			dataType: 'json',
 			success : function(data){
 				var detdata=data.data;
@@ -85,9 +85,9 @@ $(document).ready(function(){
 					var qoptions=eachqs.qoptions;//题目描述
 					var options_arr=qoptions.split("##");
 					var dffic='<span>你觉得该题难度是：</span><select>'+
-								 '<option value ="1">简单</option>'+ 
-								  '<option value ="2">有难度</option>'+
-								  '<option value="3">很难</option>'+
+								 '<option value ="0">简单</option>'+
+								  '<option value ="1">有难度</option>'+
+								  '<option value="2">很难</option>'+
 								'</select>';
 					//var answer=eachqs.answer;
 					var option_head='<input type="radio" name="radio';

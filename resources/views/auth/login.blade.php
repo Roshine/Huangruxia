@@ -54,7 +54,5 @@
         <script src="{{ CDN_PATH }}/icheck/icheck.min.js"></script>
         <script src="{{ ASSETS_PATH }}/lt.js"></script>
         <script src="{{ ASSETS_PATH }}/auth/route.js"></script>
-
-
     </div>
 </body>

@@ -21,6 +21,7 @@ $(document).ready(function(){
 			var deadline=data.deadline;
 			var tempid=data.tempid;
 			var Qdesc=data.Qdesc;
+			var week=data.week;
 			$(".Qdesc").each(function(index,el){
 				var subject=Qdesc[index].question;
 				var options=Qdesc[index].options;
@@ -32,6 +33,7 @@ $(document).ready(function(){
 				optionsin.eq(3).val(options[3]);
 			});
 			$("#target").val(target);
+			$("#week").val(week);
 			$("#title").val(title);
 			$("#startTime").val(startTime);
 			$("#deadline").val(deadline);
@@ -97,6 +99,7 @@ $(document).ready(function(){
 				var deadline=$("#deadline").val();
 				var target=$("#target").val();
 				var title=$("#title").val();
+				var week=$("#week").val();
 				$(".Qdesc").each(function(index,el){
 					//var Qdesc_this=el;
 					var subject=$(this).find(".subject").val();
@@ -116,7 +119,8 @@ $(document).ready(function(){
 					"deadLine": deadline,
 					"Qdesc": Qdescinfo,
 					"answer":answer,
-					"pretempid":pretempid
+					"pretempid":pretempid,
+					"week":week
 				};
 				console.log(senddata);
 				$.ajax({

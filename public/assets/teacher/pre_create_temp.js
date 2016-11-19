@@ -41,6 +41,7 @@ $(document).ready(function(){
 				var deadline=$("#deadline").val();
 				var target=$("#target").val();
 				var title=$("#title").val();
+				var week=$("#week").val();
 				$(".Qdesc").each(function(index,el){
 					//var Qdesc_this=el;
 					var subject=$(this).find(".subject").val();
@@ -59,7 +60,8 @@ $(document).ready(function(){
 					"startTime":startTime,
 					"deadLine": deadline,
 					"Qdesc": Qdescinfo,
-					"answer":answer
+					"answer":answer,
+					"week":week
 				};
 				console.log(senddata);
 				$.ajax({

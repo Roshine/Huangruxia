@@ -15,6 +15,7 @@ class CreateWeekScoreTable extends Migration
         Schema::create('weekScore', function (Blueprint $table) {
             $table->increments('id');
             $table->string('stuId');
+            $table->integer('groupId');
             $table->integer('week');
             $table->float('preScore')->nullable();
             $table->float('homeworkScore')->nullable();

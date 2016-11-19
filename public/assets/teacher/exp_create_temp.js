@@ -37,6 +37,8 @@ $(document).ready(function(){
 				var Qdescinfo=[];
 				var startTime=$("#start_time").val();
 				var deadline=$("#end_time").val();
+				var startTime2=$("#start_time2").val();
+				var deadline2=$("#end_time2").val();
 				var target=$("#target").val();
 				var title=$("#title").val();
 				$(".Qdesc").each(function(index,el){
@@ -55,6 +57,8 @@ $(document).ready(function(){
 					"target": target,
 					"startTime":startTime,
 					"deadLine": deadline,
+					"startTime2":startTime2,
+					"deadLine2": deadline2,
 					"Qdesc": Qdescinfo,
 					"answer":answer
 				};
@@ -63,7 +67,7 @@ $(document).ready(function(){
 					url:'createExpTemp',
 					type:'POST',
 					data:senddata,
-					success:function(){
+					success:function(data){
 						if(data.error==0){
 							alert("模板创建成功！");
 							window.location.href="#/exp_test";

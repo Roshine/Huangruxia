@@ -40,8 +40,14 @@ $(document).ready(function(){
 			$("#title").text(detdata.title);
 			$("#target").text(detdata.target);
 			$("#pre_feedback").text(detdata.experience);
-			var answerIni=detdata.answer;
-			var answer=checkanswer(answerIni);
+			$("#remarks").text(detdata.remarks);
+			var answerflag=false;
+			if (detdata.expScore||detdata.afterDeadline) {
+				var answerIni=detdata.answer;
+				var answer=checkanswer(answerIni);
+				    answerflag=true;
+			}
+
 			var result=detdata.result;
 			var difficulty=detdata.difficulty;
 			var Qdesc=detdata.Qdesc;//问题描述
@@ -50,7 +56,9 @@ $(document).ready(function(){
 				var eachqs=Qdesc[index];//每一题的信息
 				var question=eachqs.question;//题目描述
 				subject.eq(index).text(question);
-				answerdom.eq(index).text('参考答案：'+answer[index]);
+				if(answerflag){
+					answerdom.eq(index).text('参考答案：'+answer[index]);
+				}
 				var eachdifficulty=difficulty[index];
 				difficultydom.eq(index).find('option[value="'+eachdifficulty+'"]').attr("selected",true);
 				var options=eachqs.options;//题目描述
@@ -64,7 +72,7 @@ $(document).ready(function(){
 			})
 		},
 		error: function(data){
-			console.log(data);
+			console.log('error');
 		}
 	});
 	
